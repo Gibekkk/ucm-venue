@@ -524,7 +524,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	/**
 	 * FROM tables
 	 *
-	 * users_group tables in FROM clauses if needed, so there is no confusion
+	 * Groups tables in FROM clauses if needed, so there is no confusion
 	 * about operator precedence.
 	 *
 	 * @return	string

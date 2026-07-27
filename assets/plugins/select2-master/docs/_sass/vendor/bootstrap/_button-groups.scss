@@ -1,5 +1,5 @@
 //
-// Button users_group
+// Button groups
 // --------------------------------------------------
 
 // Make the div behave like a button
@@ -31,7 +31,7 @@
   }
 }
 
-// Optional: Group multiple button users_group together for a toolbar
+// Optional: Group multiple button groups together for a toolbar
 .btn-toolbar {
   margin-left: -5px; // Offset the first child's margin
   @include clearfix;
@@ -65,7 +65,7 @@
   @include border-left-radius(0);
 }
 
-// Custom edits for including btn-users_group within btn-users_group (useful for including dropdown buttons within a btn-group)
+// Custom edits for including btn-groups within btn-groups (useful for including dropdown buttons within a btn-group)
 .btn-group > .btn-group {
   float: left;
 }
@@ -138,7 +138,7 @@
 }
 
 
-// Vertical button users_group
+// Vertical button groups
 // ----------------------
 
 .btn-group-vertical {
@@ -195,7 +195,7 @@
 }
 
 
-// Justified button users_group
+// Justified button groups
 // ----------------------
 
 .btn-group-justified {

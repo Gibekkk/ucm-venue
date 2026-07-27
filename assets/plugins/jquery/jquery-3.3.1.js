@@ -713,7 +713,7 @@ try {
 }
 
 function Sizzle( selector, context, results, seed ) {
-	var m, i, elem, nid, match, users_group, newSelector,
+	var m, i, elem, nid, match, groups, newSelector,
 		newContext = context && context.ownerDocument,
 
 		// nodeType defaults to 9, since context defaults to document
@@ -812,12 +812,12 @@ function Sizzle( selector, context, results, seed ) {
 					}
 
 					// Prefix every selector in the list
-					users_group = tokenize( selector );
-					i = users_group.length;
+					groups = tokenize( selector );
+					i = groups.length;
 					while ( i-- ) {
-						users_group[i] = "#" + nid + " " + toSelector( users_group[i] );
+						groups[i] = "#" + nid + " " + toSelector( groups[i] );
 					}
-					newSelector = users_group.join( "," );
+					newSelector = groups.join( "," );
 
 					// Expand context for sibling selectors
 					newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
@@ -2130,7 +2130,7 @@ Expr.setFilters = new setFilters();
 
 tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 	var matched, match, tokens, type,
-		soFar, users_group, preFilters,
+		soFar, groups, preFilters,
 		cached = tokenCache[ selector + " " ];
 
 	if ( cached ) {
@@ -2138,7 +2138,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 	}
 
 	soFar = selector;
-	users_group = [];
+	groups = [];
 	preFilters = Expr.preFilter;
 
 	while ( soFar ) {
@@ -2149,7 +2149,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 				// Don't consume trailing commas as valid
 				soFar = soFar.slice( match[0].length ) || soFar;
 			}
-			users_group.push( (tokens = []) );
+			groups.push( (tokens = []) );
 		}
 
 		matched = false;
@@ -2192,7 +2192,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 		soFar ?
 			Sizzle.error( selector ) :
 			// Cache the tokens
-			tokenCache( selector, users_group ).slice( 0 );
+			tokenCache( selector, groups ).slice( 0 );
 };
 
 function toSelector( tokens ) {
@@ -5598,7 +5598,7 @@ var
 	/* eslint-enable */
 
 	// Support: IE <=10 - 11, Edge 12 - 13 only
-	// In IE/Edge using regex users_group here causes severe slowdowns.
+	// In IE/Edge using regex groups here causes severe slowdowns.
 	// See https://connect.microsoft.com/IE/feedback/details/1736512/
 	rnoInnerhtml = /<script|<style|<link/i,
 

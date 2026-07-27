@@ -43,7 +43,7 @@ PHP library for generating PDF documents on-the-fly.
 * text hyphenation;
 * text stretching and spacing (tracking);
 * automatic page break, line break and text alignments including justification;
-* automatic page numbering and page users_group;
+* automatic page numbering and page groups;
 * move and delete pages;
 * page compression (requires php-zlib extension);
 * XOBject Templates;

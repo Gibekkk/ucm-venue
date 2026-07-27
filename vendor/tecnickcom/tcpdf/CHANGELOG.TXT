@@ -551,7 +551,7 @@
 	- Method getAllSpotColors() was added to return all spot colors.
 	- Method colorRegistrationBar() was extended to automatically print all spot colors and support individual spot colors.
 	- The method registrationMarkCMYK() was added to print a registration mark for CMYK colors.
-	- A bug related to page users_group was fixed.
+	- A bug related to page groups was fixed.
 	- Gradient() method now supports CMYK equivalents of spot colors.
 	- Example n. 56 was updated.
 
@@ -1084,7 +1084,7 @@
 	- This version includes a minor bugfix.
 
 5.9.106 (2011-08-04)
-	- This version includes transparency users_group: check the new parameter on startTemplate() method and example 62.
+	- This version includes transparency groups: check the new parameter on startTemplate() method and example 62.
 
 5.9.105 (2011-08-04)
 	- Bug item #3386153 "Check Box not ticked when set to true" was fixed.
@@ -2918,7 +2918,7 @@
 	- resize parameter was added to Image() signature to reduce the image size and fit width and height (see example 9).
 	- TCPDF now supports all images supported by GD library: GD, GD2, GD2PART, GIF, JPEG, PNG, BMP, XBM, XPM.
 	- CMYK support was added to SetDrawColor(), SetFillColor(), SetTextColor() (see example 22).
-	- Page users_group were added (see example 23).
+	- Page Groups were added (see example 23).
 	- setVisibility() function was added to restrict the rendering of some elements to screen or printout (see example 24).
 	- All private variables and functions were changed to protected.
 	- setAlpha() function was added to give transparency support for all objects (see example 25).

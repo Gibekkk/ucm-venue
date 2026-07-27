@@ -6,8 +6,7 @@
   .img-event-custom {
     width: 100%;
     max-width: 1280px;
-    aspect-ratio: 16 / 9; /* Ini adalah rasio untuk 1280x720 */
-    object-fit: cover;    /* Memotong bagian yang berlebih secara rapi agar tidak melar */
+    height: auto;          /* Tinggi mengikuti rasio asli gambar, tidak dipotong */
     display: block;
     border-radius: 4px;   /* Opsional: Membuat ujung gambar sedikit tumpul */
   }

@@ -50,7 +50,7 @@ $lang['update_unsuccessful']                 = 'Gagal mengupdate akun';
 $lang['delete_successful']                   = 'User telah dihapus';
 $lang['delete_unsuccessful']                 = 'Tidak dapat menghapus user';
 
-// users_group
+// Groups
 $lang['group_creation_successful']           = 'Group created Successfully';
 $lang['group_already_exists']                = 'Group name already taken';
 $lang['group_update_successful']             = 'Group details updated';

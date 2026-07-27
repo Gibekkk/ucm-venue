@@ -48,7 +48,7 @@ class Ion_auth
 	public $_extra_set = array();
 
 	/**
-	 * caching of users and their groups
+	 * caching of users and their users_group
 	 *
 	 * @var array
 	 **/
@@ -484,39 +484,94 @@ class Ion_auth
 	 
 	//additional
 	public function is_superadmin()
-	{
-		$usertype = $this->session->userdata('usertype');
-		if ($usertype == '1')
-		{
-			return $usertype;
-		}
-		return null;
-	}
+    {
+        $usertype = $this->session->userdata('usertype');
+        if ($usertype == '1')
+        {
+            return $usertype;
+        }
+        return null;
+    }
 
-	public function is_admin()
-	{
-		$usertype = $this->session->userdata('usertype');
-		if ($usertype == '2')
-		{
-			return $usertype;
-		}
-		return null;
-	}
+    public function is_admin()
+    {
+        $usertype = $this->session->userdata('usertype');
+        if ($usertype == '2')
+        {
+            return $usertype;
+        }
+        return null;
+    }
 
-	public function is_buyer()
-	{
-		$usertype = $this->session->userdata('usertype');
-		if ($usertype == '5')
-		{
-			return $usertype;
-		}
-		return null;
-	}
+    public function is_buyer()
+    {
+        $usertype = $this->session->userdata('usertype');
+        if ($usertype == '0')
+        {
+            return $usertype;
+        }
+        return null;
+    }
+
+    // ==========================================
+    // TAMBAHAN ROLE BARU (INTERNAL)
+    // ==========================================
+
+    public function is_finance()
+    {
+        $usertype = $this->session->userdata('usertype');
+        if ($usertype == '5')
+        {
+            return $usertype;
+        }
+        return null;
+    }
+
+    public function is_ict()
+    {
+        $usertype = $this->session->userdata('usertype');
+        if ($usertype == '6')
+        {
+            return $usertype;
+        }
+        return null;
+    }
+
+    public function is_pm_admin()
+    {
+        $usertype = $this->session->userdata('usertype');
+        if ($usertype == '7')
+        {
+            return $usertype;
+        }
+        return null;
+    }
+
+    public function is_pm_all()
+    {
+        $usertype = $this->session->userdata('usertype');
+        if ($usertype == '8')
+        {
+            return $usertype;
+        }
+        return null;
+    }
+    
+    // Opsional: Untuk mengenali role customer (3 & 4) jika dibutuhkan
+    public function is_customer()
+    {
+        $usertype = $this->session->userdata('usertype');
+        if (in_array($usertype, array('3', '4')))
+        {
+            return $usertype;
+        }
+        return null;
+    }
 
 	/**
 	 * @param int|string|array $check_group group(s) to check
 	 * @param int|string|bool  $id          user id
-	 * @param bool             $check_all   check if all groups is present, or any of the groups
+	 * @param bool             $check_all   check if all users_group is present, or any of the users_group
 	 *
 	 * @return bool Whether the/all user(s) with the given ID(s) is/are in the given group
 	 * @author Phil Sturgeon
@@ -538,9 +593,9 @@ class Ion_auth
 		}
 		else
 		{
-			$users_groups = $this->ion_auth_model->get_users_groups($id)->result();
+			$users_group = $this->ion_auth_model->get_users_group($id)->result();
 			$groups_array = array();
-			foreach ($users_groups as $group)
+			foreach ($users_group as $group)
 			{
 				$groups_array[$group->id] = $group->name;
 			}
@@ -548,13 +603,13 @@ class Ion_auth
 		}
 		foreach ($check_group as $key => $value)
 		{
-			$groups = (is_string($value)) ? $groups_array : array_keys($groups_array);
+			$users_group = (is_string($value)) ? $groups_array : array_keys($groups_array);
 
 			/**
 			 * if !all (default), in_array
 			 * if all, !in_array
 			 */
-			if (in_array($value, $groups) xor $check_all)
+			if (in_array($value, $users_group) xor $check_all)
 			{
 				/**
 				 * if !all (default), true

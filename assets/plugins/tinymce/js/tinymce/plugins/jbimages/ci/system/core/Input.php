@@ -462,11 +462,11 @@ class CI_Input {
 	*/
 	protected function _valid_ipv6($str)
 	{
-		// 8 users_group, separated by :
+		// 8 groups, separated by :
 		// 0-ffff per group
-		// one set of consecutive 0 users_group can be collapsed to ::
+		// one set of consecutive 0 groups can be collapsed to ::
 
-		$users_group = 8;
+		$groups = 8;
 		$collapsed = FALSE;
 
 		$chunks = array_filter(
@@ -489,16 +489,16 @@ class CI_Input {
 				return FALSE;
 			}
 
-			$users_group--;
+			$groups--;
 		}
 
 		while ($seg = array_pop($chunks))
 		{
 			if ($seg[0] == ':')
 			{
-				if (--$users_group == 0)
+				if (--$groups == 0)
 				{
-					return FALSE;	// too many users_group
+					return FALSE;	// too many groups
 				}
 
 				if (strlen($seg) > 2)
@@ -522,7 +522,7 @@ class CI_Input {
 			}
 		}
 
-		return $collapsed OR $users_group == 1;
+		return $collapsed OR $groups == 1;
 	}
 
 	// --------------------------------------------------------------------

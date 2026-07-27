@@ -25,7 +25,7 @@
             </tr>
           </thead>
           <tbody>
-            <?php $start = 0; foreach ($users_group as $group):?>
+            <?php $start = 0; foreach ($groups as $group):?>
             <tr>
               <td style="text-align:center"><?php echo ++$start ?></td>  
               <td style="text-align:center"><?php echo $group->name ?></td>

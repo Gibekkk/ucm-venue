@@ -207,7 +207,7 @@ input[type="search"] {
 }
 
 
-// Form users_group
+// Form groups
 //
 // Designed to help with the organization and spacing of vertical forms. For
 // horizontal forms, use the predefined grid classes.
@@ -399,7 +399,7 @@ input[type="checkbox"] {
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 2; // Ensure icon is above input users_group
+  z-index: 2; // Ensure icon is above input groups
   display: block;
   width: $input-height-base;
   height: $input-height-base;
@@ -465,7 +465,7 @@ input[type="checkbox"] {
 // viewports reach <768px.
 //
 // Requires wrapping inputs and labels with `.form-group` for proper display of
-// default HTML form controls and our custom form controls (e.g., input users_group).
+// default HTML form controls and our custom form controls (e.g., input groups).
 //
 // Heads up! This is mixin-ed into `.navbar-form` in navbars.less.
 
@@ -504,7 +504,7 @@ input[type="checkbox"] {
       }
     }
 
-    // Input users_group need that 100% width though
+    // Input groups need that 100% width though
     .input-group > .form-control {
       width: 100%;
     }
@@ -571,7 +571,7 @@ input[type="checkbox"] {
     min-height: ($line-height-computed + ($padding-base-vertical + 1));
   }
 
-  // Make form users_group behave like rows
+  // Make form groups behave like rows
   .form-group {
     @include make-row;
   }

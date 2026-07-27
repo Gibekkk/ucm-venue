@@ -27,7 +27,7 @@
 								<?php echo $message;?>
                 <div class="table-responsive no-padding">
                   <table id="datatable" class="table table-striped table-bordered">
-                    <?php if(in_array($this->session->userdata('usertype'), array('1', '6', '8'))){ ?>
+                    <?php if($this->session->userdata('user_id') == '1'){ ?>
                       <thead>
                         <tr>
                           <th style="text-align: center">No.</th>
@@ -49,7 +49,7 @@
                             <td style="text-align:center"><?php echo $user->email ?></td>
                             <td style="text-align:center"><?php if(!empty($user->last_login)){echo date("Y-m-d H:i:s", $user->last_login);} ?></td>
                               <td style="text-align:center"><?php echo $user->name_group ?></td>
-                              <td style="text-align:center"><?php echo ($user->active) ? anchor("admin/auth/deactivate/".$user->id, 'ACTIVE','title="ACTIVE", class="btn btn-sm btn-primary"', $this->lang->line('index_active_link')) : anchor("admin/auth/activate/". $user->id, 'INACTIVE','title="INACTIVE", class="btn btn-sm btn-danger"' , lang('index_inactive_link'));?></td>
+                              <td style="text-align:center"><?php echo ($user->active) ? anchor("admin/auth/deactivate/".$user->id, 'ACTIVE','title="ACTIVE", class="btn btn-sm btn-primary"', lang('index_active_link')) : anchor("admin/auth/activate/". $user->id, 'INACTIVE','title="INACTIVE", class="btn btn-sm btn-danger"' , lang('index_inactive_link'));?></td>
                               <td style="text-align:center">
                                 <?php
                                 echo anchor(site_url('admin/auth/edit_user/'.$user->id),'<i class="glyphicon glyphicon-pencil"></i>','title="Edit", class="btn btn-sm btn-warning"'); echo ' ';
@@ -81,7 +81,7 @@
                               <td style="text-align:center"><?php echo $user->email ?></td>
                               <td style="text-align:center"><?php echo $user->last_login ?></td>
                               <td style="text-align:center"><?php echo $user->name_group ?></td>
-                              <td style="text-align:center"><?php echo ($user->active) ? anchor("admin/auth/deactivate/".$user->id, 'ACTIVE','title="ACTIVE", class="btn btn-sm btn-primary"', $this->lang->line('index_active_link')) : anchor("admin/auth/activate/". $user->id, 'INACTIVE','title="INACTIVE", class="btn btn-sm btn-danger"' , lang('index_inactive_link'));?></td>
+                              <td style="text-align:center"><?php echo ($user->active) ? anchor("admin/auth/deactivate/".$user->id, 'ACTIVE','title="ACTIVE", class="btn btn-sm btn-primary"', lang('index_active_link')) : anchor("admin/auth/activate/". $user->id, 'INACTIVE','title="INACTIVE", class="btn btn-sm btn-danger"' , lang('index_inactive_link'));?></td>
                               <td style="text-align:center">
                                 <?php
                                 echo anchor(site_url('admin/auth/edit_user/'.$user->id),'<i class="glyphicon glyphicon-pencil"></i>','title="Edit", class="btn btn-sm btn-warning"'); echo ' ';

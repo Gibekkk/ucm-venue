@@ -374,7 +374,7 @@ test('no options may be returned with no matches', function (assert) {
 });
 
 test('optgroup tags are marked with children', function (assert) {
-  var $select = $('#qunit-fixture .users_group');
+  var $select = $('#qunit-fixture .groups');
 
   var data = new SelectData($select, selectOptions);
 
@@ -387,7 +387,7 @@ test('optgroup tags are marked with children', function (assert) {
 });
 
 test('empty optgroups are still shown when queried', function (assert) {
-  var $select = $('#qunit-fixture .users_group');
+  var $select = $('#qunit-fixture .groups');
 
   var data = new SelectData($select, selectOptions);
 

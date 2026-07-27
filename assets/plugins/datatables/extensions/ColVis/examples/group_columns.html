@@ -26,7 +26,7 @@ $(document).ready(function() {
 		dom: 'C<"clear">lfrtip',
 		colVis: {
 			exclude: [],
-			users_group: [
+			groups: [
 				{
 					title: "Engine",
 					columns: [ 0, 3 ]
@@ -50,12 +50,12 @@ $(document).ready(function() {
 			<h1>ColVis example <span>Group columns</span></h1>
 
 			<div class="info">
-				<p>It can be useful at times to show and hide multiple columns together - i.e. grouping them together. Groupings are defined by the <code>users_group</code> array.
+				<p>It can be useful at times to show and hide multiple columns together - i.e. grouping them together. Groupings are defined by the <code>groups</code> array.
 				Create a group button by naming it (using the <code>title</code> option) and specifying by index which columns belong to it (using the <code>columns</code>
 				option).</p>
 
-				<p>Note also that this ability to create users_group can be used in combination <code>exclude</code> to remove individual columns from the list (should you wish them to
-				only be used in the users_group), or set <code>exclude = [ 'all' ]</code> to show only the grouping buttons (i.e. individual column control buttons will not be
+				<p>Note also that this ability to create groups can be used in combination <code>exclude</code> to remove individual columns from the list (should you wish them to
+				only be used in the groups), or set <code>exclude = [ 'all' ]</code> to show only the grouping buttons (i.e. individual column control buttons will not be
 				shown).</p>
 
 				<p>For full information about the ColVis options, please refer to the <a href="//datatables.net/extensions/colvis/options">ColVis options documentation</a>.</p>
@@ -559,7 +559,7 @@ $(document).ready(function() {
 		dom: 'C&lt;&quot;clear&quot;&gt;lfrtip',
 		colVis: {
 			exclude: [],
-			users_group: [
+			groups: [
 				{
 					title: &quot;Engine&quot;,
 					columns: [ 0, 3 ]

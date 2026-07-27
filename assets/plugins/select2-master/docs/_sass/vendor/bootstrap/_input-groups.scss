@@ -1,5 +1,5 @@
 //
-// Input users_group
+// Input groups
 // --------------------------------------------------
 
 // Base styles
@@ -7,7 +7,7 @@
 .input-group {
   position: relative; // For dropdowns
   display: table;
-  border-collapse: separate; // prevent input users_group from inheriting border styles from table cells when placed within a table
+  border-collapse: separate; // prevent input groups from inheriting border styles from table cells when placed within a table
 
   // Undo padding and float of grid classes
   &[class*="col-"] {
@@ -23,7 +23,7 @@
     z-index: 2;
 
     // IE9 fubars the placeholder attribute in text inputs and the arrows on
-    // select elements in input users_group. To fix it, we float the input. Details:
+    // select elements in input groups. To fix it, we float the input. Details:
     // https://github.com/twbs/bootstrap/issues/11561#issuecomment-28936855
     float: left;
 
@@ -72,7 +72,7 @@
   vertical-align: middle; // Match the inputs
 }
 
-// Text input users_group
+// Text input groups
 // -------------------------
 .input-group-addon {
   padding: $padding-base-vertical $padding-base-horizontal;
@@ -130,11 +130,11 @@
   border-left: 0;
 }
 
-// Button input users_group
+// Button input groups
 // -------------------------
 .input-group-btn {
   position: relative;
-  // Jankily prevent input button users_group from wrapping with `white-space` and
+  // Jankily prevent input button groups from wrapping with `white-space` and
   // `font-size` in combination with `inline-block` on buttons.
   font-size: 0;
   white-space: nowrap;

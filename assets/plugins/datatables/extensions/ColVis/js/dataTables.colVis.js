@@ -328,16 +328,16 @@ ColVis.prototype = {
 			this.s.restore = this.s.sRestore;
 		}
 
-		// CamelCase to Hungarian for the column users_group 
-		var users_group = this.s.users_group;
+		// CamelCase to Hungarian for the column groups 
+		var groups = this.s.groups;
 		var hungarianGroups = this.s.aoGroups;
-		if ( users_group ) {
-			for ( var i=0, ien=users_group.length ; i<ien ; i++ ) {
-				if ( users_group[i].title ) {
-					hungarianGroups[i].sTitle = users_group[i].title;
+		if ( groups ) {
+			for ( var i=0, ien=groups.length ; i<ien ; i++ ) {
+				if ( groups[i].title ) {
+					hungarianGroups[i].sTitle = groups[i].title;
 				}
-				if ( users_group[i].columns ) {
-					hungarianGroups[i].aiColumns = users_group[i].columns;
+				if ( groups[i].columns ) {
+					hungarianGroups[i].aiColumns = groups[i].columns;
 				}
 			}
 		}
@@ -355,7 +355,7 @@ ColVis.prototype = {
 	{
 		var columns = this.s.dt.aoColumns;
 		var buttons = this.dom.buttons;
-		var users_group = this.s.aoGroups;
+		var groups = this.s.aoGroups;
 		var button;
 
 		for ( var i=0, ien=buttons.length ; i<ien ; i++ ) {
@@ -381,14 +381,14 @@ ColVis.prototype = {
 			return true;
 		};
 
-		for ( var j=0, jLen=users_group.length ; j<jLen ; j++ )
+		for ( var j=0, jLen=groups.length ; j<jLen ; j++ )
 		{
-			if ( allVisible(users_group[j].aiColumns) )
+			if ( allVisible(groups[j].aiColumns) )
 			{
 				$('input', this.dom.groupButtons[j]).prop('checked', true);
 				$('input', this.dom.groupButtons[j]).prop('indeterminate', false);
 			}
-			else if ( allHidden(users_group[j].aiColumns) )
+			else if ( allHidden(groups[j].aiColumns) )
 			{
 				$('input', this.dom.groupButtons[j]).prop('checked', false);
 				$('input', this.dom.groupButtons[j]).prop('indeterminate', false);
@@ -402,7 +402,7 @@ ColVis.prototype = {
 
 
 	/**
-	 * Loop through the users_group (provided in the settings) and create a button for each.
+	 * Loop through the groups (provided in the settings) and create a button for each.
 	 *  @method  _fnAddgroups
 	 *  @returns void
 	 *  @private

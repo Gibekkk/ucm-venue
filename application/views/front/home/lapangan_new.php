@@ -2,8 +2,7 @@
   /* Menyamakan tinggi gambar dan mencegah gambar melar/gepeng */
   .img-lapangan {
     width: 100%;
-    height: 250px; /* Anda bisa menyesuaikan tinggi ini sesuai selera */
-    object-fit: cover; 
+    height: auto;
   }
   
   /* Menyamakan tinggi kotak thumbnail/card */

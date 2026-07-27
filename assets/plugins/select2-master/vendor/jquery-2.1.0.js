@@ -732,7 +732,7 @@
             function Sizzle( selector, context, results, seed ) {
                 var match, elem, m, nodeType,
                 // QSA vars
-                    i, users_group, old, nid, newContext, newSelector;
+                    i, groups, old, nid, newContext, newSelector;
 
                 if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
                     setDocument( context );
@@ -801,7 +801,7 @@
                         // and working up from there (Thanks to Andrew Dupont for the technique)
                         // IE 8 doesn't work on object elements
                         if ( nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-                            users_group = tokenize( selector );
+                            groups = tokenize( selector );
 
                             if ( (old = context.getAttribute("id")) ) {
                                 nid = old.replace( rescape, "\\$&" );
@@ -810,12 +810,12 @@
                             }
                             nid = "[id='" + nid + "'] ";
 
-                            i = users_group.length;
+                            i = groups.length;
                             while ( i-- ) {
-                                users_group[i] = nid + toSelector( users_group[i] );
+                                groups[i] = nid + toSelector( groups[i] );
                             }
                             newContext = rsibling.test( selector ) && testContext( context.parentNode ) || context;
-                            newSelector = users_group.join(",");
+                            newSelector = groups.join(",");
                         }
 
                         if ( newSelector ) {
@@ -1980,7 +1980,7 @@
 
             function tokenize( selector, parseOnly ) {
                 var matched, match, tokens, type,
-                    soFar, users_group, preFilters,
+                    soFar, groups, preFilters,
                     cached = tokenCache[ selector + " " ];
 
                 if ( cached ) {
@@ -1988,7 +1988,7 @@
                 }
 
                 soFar = selector;
-                users_group = [];
+                groups = [];
                 preFilters = Expr.preFilter;
 
                 while ( soFar ) {
@@ -1999,7 +1999,7 @@
                             // Don't consume trailing commas as valid
                             soFar = soFar.slice( match[0].length ) || soFar;
                         }
-                        users_group.push( (tokens = []) );
+                        groups.push( (tokens = []) );
                     }
 
                     matched = false;
@@ -2042,7 +2042,7 @@
                     soFar ?
                         Sizzle.error( selector ) :
                         // Cache the tokens
-                        tokenCache( selector, users_group ).slice( 0 );
+                        tokenCache( selector, groups ).slice( 0 );
             }
 
             function toSelector( tokens ) {

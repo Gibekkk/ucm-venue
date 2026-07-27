@@ -246,13 +246,13 @@ class ExamplesTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * test: users_group
+     * test: groups
      *
      * @return void
      */
     public function testGroups()
     {
-        $this->launchExample('users_group');
+        $this->launchExample('groups');
     }
 
     /**

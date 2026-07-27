@@ -9,13 +9,22 @@ class Kontak extends CI_Controller
 
     $this->data['module'] = 'Kontak';
 
-    if(!$this->ion_auth->logged_in()){redirect('admin/auth/login', 'refresh');}
-    elseif(!$this->ion_auth->is_superadmin() && !$this->ion_auth->is_admin()){redirect(base_url());}
+    if (!$this->ion_auth->logged_in()) {
+      redirect('admin/auth/login', 'refresh');
+    } elseif (
+      !$this->ion_auth->is_superadmin() &&
+      !$this->ion_auth->is_admin() &&
+      !$this->ion_auth->is_ict() &&
+      !$this->ion_auth->is_pm_admin() &&
+      !$this->ion_auth->is_pm_all()
+    ) {
+      redirect(base_url());
+    }
   }
 
   public function index()
   {
-    $this->data['title']    = 'Data '.$this->data['module'];
+    $this->data['title']    = 'Data ' . $this->data['module'];
     $this->data['get_all']  = $this->Kontak_model->get_all();
 
     $this->load->view('back/kontak/kontak_list', $this->data);
@@ -23,7 +32,7 @@ class Kontak extends CI_Controller
 
   public function create()
   {
-    $this->data['title']          = 'Tambah Data '.$this->data['module'];
+    $this->data['title']          = 'Tambah Data ' . $this->data['module'];
     $this->data['action']         = site_url('admin/kontak/create_action');
     $this->data['button_submit']  = 'Simpan';
     $this->data['button_reset']   = 'Reset';
@@ -49,27 +58,24 @@ class Kontak extends CI_Controller
   {
     $this->_rules();
 
-    if ($this->form_validation->run() == FALSE)
-    {
+    if ($this->form_validation->run() == FALSE) {
       $this->create();
-    }
-      else
-      {
-        $data = array(
-          'nama_kontak'   => $this->input->post('nama_kontak'),
-          'nohp'          => $this->input->post('nohp'),
-          'created_by'    => $this->session->userdata('username'),
-        );
+    } else {
+      $data = array(
+        'nama_kontak'   => $this->input->post('nama_kontak'),
+        'nohp'          => $this->input->post('nohp'),
+        'created_by'    => $this->session->userdata('username'),
+      );
 
-        // eksekusi query INSERT
-        $this->Kontak_model->insert($data);
-        // set pesan data berhasil dibuat
-        $this->session->set_flashdata('message', '
+      // eksekusi query INSERT
+      $this->Kontak_model->insert($data);
+      // set pesan data berhasil dibuat
+      $this->session->set_flashdata('message', '
         <div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
 					<i class="ace-icon fa fa-bullhorn green"></i> Data berhasil disimpan
         </div>');
-        redirect(site_url('admin/kontak'));
-      }
+      redirect(site_url('admin/kontak'));
+    }
   }
 
   public function update($id)
@@ -77,9 +83,8 @@ class Kontak extends CI_Controller
     $row = $this->Kontak_model->get_by_id($id);
     $this->data['kontak'] = $this->Kontak_model->get_by_id($id);
 
-    if ($row)
-    {
-      $this->data['title']          = 'Ubah Data '.$this->data['module'];
+    if ($row) {
+      $this->data['title']          = 'Ubah Data ' . $this->data['module'];
       $this->data['action']         = site_url('admin/kontak/update_action');
       $this->data['button_submit']  = 'Simpan';
       $this->data['button_reset']   = 'Reset';
@@ -103,48 +108,42 @@ class Kontak extends CI_Controller
       );
 
       $this->load->view('back/kontak/kontak_edit', $this->data);
-    }
-      else
-      {
-        $this->session->set_flashdata('message', '
+    } else {
+      $this->session->set_flashdata('message', '
         <div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
 					<i class="ace-icon fa fa-bullhorn green"></i> Data tidak ditemukan
         </div>');
-        redirect(site_url('admin/kontak'));
-      }
+      redirect(site_url('admin/kontak'));
+    }
   }
 
   public function update_action()
   {
     $this->_rules();
 
-    if ($this->form_validation->run() == FALSE)
-    {
+    if ($this->form_validation->run() == FALSE) {
       $this->update($this->input->post('id_kontak'));
-    }
-      else
-      {
-        $data = array(
-          'nama_kontak'   => $this->input->post('nama_kontak'),
-          'nohp'          => $this->input->post('nohp'),
-          'modified_by'   => $this->session->userdata('username'),
-        );
+    } else {
+      $data = array(
+        'nama_kontak'   => $this->input->post('nama_kontak'),
+        'nohp'          => $this->input->post('nohp'),
+        'modified_by'   => $this->session->userdata('username'),
+      );
 
-        $this->Kontak_model->update($this->input->post('id_kontak'), $data);
-        $this->session->set_flashdata('message', '
+      $this->Kontak_model->update($this->input->post('id_kontak'), $data);
+      $this->session->set_flashdata('message', '
         <div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
 					<i class="ace-icon fa fa-bullhorn green"></i> Data berhasil disimpan
         </div>');
-        redirect(site_url('admin/kontak'));
-      }
+      redirect(site_url('admin/kontak'));
+    }
   }
 
   public function delete($id)
   {
     $row = $this->Kontak_model->get_by_id($id);
 
-    if ($row)
-    {
+    if ($row) {
       $this->Kontak_model->delete($id);
       $this->session->set_flashdata('message', '
       <div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
@@ -152,15 +151,14 @@ class Kontak extends CI_Controller
       </div>');
       redirect(site_url('admin/kontak'));
     }
-      // Jika data tidak ada
-      else
-      {
-        $this->session->set_flashdata('message', '
+    // Jika data tidak ada
+    else {
+      $this->session->set_flashdata('message', '
         <div class="alert alert-block alert-warning"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
           <i class="ace-icon fa fa-bullhorn green"></i> Data tidak ditemukan
         </div>');
-        redirect(site_url('admin/kontak'));
-      }
+      redirect(site_url('admin/kontak'));
+    }
   }
 
   public function _rules()
@@ -173,5 +171,4 @@ class Kontak extends CI_Controller
     $this->form_validation->set_rules('id_kontak', 'id_kontak', 'trim');
     $this->form_validation->set_error_delimiters('<div class="alert alert-danger alert" align="left">', '</div>');
   }
-
 }

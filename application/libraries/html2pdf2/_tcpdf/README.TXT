@@ -47,7 +47,7 @@ Main Features:
 //  * bookmarks and table of content;
 //  * text hyphenation;
 //  * automatic page break, line break and text alignments including justification;
-//  * automatic page numbering and page users_group;
+//  * automatic page numbering and page groups;
 //  * move and delete pages;
 //  * page compression (requires php-zlib extension);
 

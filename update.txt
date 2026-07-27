@@ -1,0 +1,7 @@
+application/views/front/event/arsip.php
+application/views/front/home/lapangan_new.php
+application/models/Konfirmasi_model.php
+application/controllers/Page.php
+application/helpers/language_helper.php
+application/controllers/admin/Auth.php
+

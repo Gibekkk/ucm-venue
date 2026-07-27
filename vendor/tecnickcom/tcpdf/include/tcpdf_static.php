@@ -1097,7 +1097,7 @@ class TCPDF_STATIC {
 				unset($cssblocks[$key]);
 			}
 		}
-		// split users_group of selectors (comma-separated list of selectors)
+		// split groups of selectors (comma-separated list of selectors)
 		foreach ($cssblocks as $key => $block) {
 			if (strpos($block[0], ',') > 0) {
 				$selectors = explode(',', $block[0]);

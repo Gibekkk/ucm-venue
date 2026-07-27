@@ -1732,7 +1732,7 @@ class CI_Email {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Batch Bcc Send. Sends users_group of BCCs in batches
+	 * Batch Bcc Send. Sends groups of BCCs in batches
 	 *
 	 * @return	void
 	 */

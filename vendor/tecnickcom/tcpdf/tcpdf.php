@@ -59,7 +59,7 @@
 //  * text hyphenation;
 //  * text stretching and spacing (tracking);
 //  * automatic page break, line break and text alignments including justification;
-//  * automatic page numbering and page users_group;
+//  * automatic page numbering and page groups;
 //  * move and delete pages;
 //  * page compression (requires php-zlib extension);
 //  * XOBject Templates;
@@ -94,7 +94,7 @@
  * <li>text hyphenation;</li>
  * <li>text stretching and spacing (tracking);</li>
  * <li>automatic page break, line break and text alignments including justification;</li>
- * <li>automatic page numbering and page users_group;</li>
+ * <li>automatic page numbering and page groups;</li>
  * <li>move and delete pages;</li>
  * <li>page compression (requires php-zlib extension);</li>
  * <li>XOBject Templates;</li>
@@ -8211,7 +8211,7 @@ class TCPDF {
 					$out .= ' '.$val['n'].' 0 R';
 				}
 			}
-			// add radiobutton users_group
+			// add radiobutton groups
 			if (isset($this->radiobutton_groups[$n])) {
 				foreach ($this->radiobutton_groups[$n] as $key => $data) {
 					if (isset($data['n'])) {

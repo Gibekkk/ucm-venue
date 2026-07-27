@@ -2,7 +2,7 @@
 
 class Slider extends CI_Controller
 {
-  function __construct()
+  public function __construct()
   {
     parent::__construct();
     $this->load->model('Slider_model');
@@ -10,8 +10,21 @@ class Slider extends CI_Controller
 
     $this->data['module'] = 'Slider';
 
-    if(!$this->ion_auth->logged_in()){redirect('admin/auth/login', 'refresh');}
-    elseif(!$this->ion_auth->is_superadmin() && !$this->ion_auth->is_admin()){redirect(base_url());}
+    // Cek apakah user sudah login
+    if(!$this->ion_auth->logged_in()){
+        redirect('admin/auth/login', 'refresh');
+    }
+    // Izinkan akses untuk Superadmin, Admin, ICT, PM Admin, dan PM All
+    // (Finance tidak dimasukkan karena tidak memiliki hak akses manajemen konten web)
+    elseif(
+        !$this->ion_auth->is_superadmin() && 
+        !$this->ion_auth->is_admin() &&
+        !$this->ion_auth->is_ict() &&
+        !$this->ion_auth->is_pm_admin() &&
+        !$this->ion_auth->is_pm_all()
+    ){
+        redirect(base_url());
+    }
   }
 
   public function index()
@@ -70,8 +83,8 @@ class Slider extends CI_Controller
 
         /* memanggil library upload ci */
         $config['upload_path']      = './assets/images/slider/';
-        $config['allowed_types']    = 'jpg|jpeg|png|gif';
-        $config['max_size']         = '2048'; // 2 MB
+        $config['allowed_types']    = 'jpg|jpeg|png|gif|webm|mp4|webp';
+        $config['max_size']         = '51200'; // 50 MB
         $config['file_name']        = $nmfile; //nama yang terupload nantinya
 
         $this->load->library('upload', $config);
@@ -88,20 +101,29 @@ class Slider extends CI_Controller
           else
           {
             $foto = $this->upload->data();
-            $thumbnail                = $config['file_name'];
-            // library yang disediakan codeigniter
-            $config['image_library']  = 'gd2';
-            // gambar yang akan dibuat thumbnail
-            $config['source_image']   = './assets/images/slider/'.$foto['file_name'].'';
-            // rasio resolusi
-            $config['maintain_ratio'] = FALSE;
-            // lebar
-            $config['width']          = 1200;
-            // tinggi
-            $config['height']         = 500;
+            
+            // Check if file is an image (not a video)
+            $image_types = array('.jpg', '.jpeg', '.png', '.gif', '.webp');
+            $is_image = in_array(strtolower($foto['file_ext']), $image_types);
+            
+            // Only create thumbnail for images, not for videos
+            if ($is_image)
+            {
+              $thumbnail                = $config['file_name'];
+              // library yang disediakan codeigniter
+              $config['image_library']  = 'gd2';
+              // gambar yang akan dibuat thumbnail
+              $config['source_image']   = './assets/images/slider/'.$foto['file_name'].'';
+              // rasio resolusi
+              $config['maintain_ratio'] = FALSE;
+              // lebar
+              $config['width']          = 1200;
+              // tinggi
+              $config['height']         = 500;
 
-            $this->load->library('image_lib', $config);
-            $this->image_lib->resize();
+              $this->load->library('image_lib', $config);
+              $this->image_lib->resize();
+            }
 
             $data = array(
               'no_urut'       => $this->input->post('no_urut'),
@@ -109,7 +131,7 @@ class Slider extends CI_Controller
               'link'          => $this->input->post('link'),
               'foto'          => $nmfile,
               'foto_type'     => $foto['file_ext'],
-              'uploader'      => $this->session->userdata('username')
+              'created_by'    => $this->session->userdata('username')
             );
 
             // eksekusi query INSERT
@@ -125,7 +147,7 @@ class Slider extends CI_Controller
           'no_urut'   => $this->input->post('no_urut'),
           'nama_slider'  => $this->input->post('nama_slider'),
           'link'      => $this->input->post('link'),
-          'uploader'  => $this->session->userdata('username')
+          'created_by'  => $this->session->userdata('username')
         );
 
         // eksekusi query INSERT
@@ -207,17 +229,19 @@ class Slider extends CI_Controller
 
         if(file_exists($dir))
         {
-          // Hapus foto dan thumbnail
+          // Hapus foto dan thumbnail jika ada
           unlink($dir);
-          unlink($dir_thumb);
+          if(file_exists($dir_thumb)) {
+            unlink($dir_thumb);
+          }
         }
 
         $nmfile = strtolower(url_title($this->input->post('no_urut'))).date('YmdHis');
 
         //load uploading file library
         $config['upload_path']      = './assets/images/slider/';
-        $config['allowed_types']    = 'jpg|jpeg|png|gif';
-        $config['max_size']         = '2048'; // 2 MB
+        $config['allowed_types']    = 'jpg|jpeg|png|gif|webm|mp4|webp';
+        $config['max_size']         = '51200'; // 50 MB
         $config['file_name']        = $nmfile; //nama yang terupload nantinya
 
         $this->load->library('upload', $config);
@@ -235,21 +259,30 @@ class Slider extends CI_Controller
           else
           {
             $foto = $this->upload->data();
-            // library yang disediakan codeigniter
-            $thumbnail                = $config['file_name'];
-            //nama yang terupload nantinya
-            $config['image_library']  = 'gd2';
-            // gambar yang akan dibuat thumbnail
-            $config['source_image']   = './assets/images/slider/'.$foto['file_name'].'';
-            // rasio resolusi
-            $config['maintain_ratio'] = FALSE;
-            // lebar
-            $config['width']          = 1200;
-            // tinggi
-            $config['height']         = 500;
+            
+            // Check if file is an image (not a video)
+            $image_types = array('.jpg', '.jpeg', '.png', '.gif', '.webp');
+            $is_image = in_array(strtolower($foto['file_ext']), $image_types);
+            
+            // Only create thumbnail for images, not for videos
+            if ($is_image)
+            {
+              // library yang disediakan codeigniter
+              $thumbnail                = $config['file_name'];
+              //nama yang terupload nantinya
+              $config['image_library']  = 'gd2';
+              // gambar yang akan dibuat thumbnail
+              $config['source_image']   = './assets/images/slider/'.$foto['file_name'].'';
+              // rasio resolusi
+              $config['maintain_ratio'] = FALSE;
+              // lebar
+              $config['width']          = 1200;
+              // tinggi
+              $config['height']         = 500;
 
-            $this->load->library('image_lib', $config);
-            $this->image_lib->resize();
+              $this->load->library('image_lib', $config);
+              $this->image_lib->resize();
+            }
 
             $data = array(
               'no_urut'     => $this->input->post('no_urut'),
@@ -296,9 +329,15 @@ class Slider extends CI_Controller
     $dir = "assets/images/slider/".$delete->foto.$delete->foto_type;
     $dir_thumb = "assets/images/slider/".$delete->foto.'_thumb'.$delete->foto_type;
 
-    // Hapus foto
-    unlink($dir);
-    unlink($dir_thumb);
+    // Hapus foto/video
+    if(file_exists($dir)) {
+      unlink($dir);
+    }
+    
+    // Hapus thumbnail (hanya untuk gambar)
+    if(file_exists($dir_thumb)) {
+      unlink($dir_thumb);
+    }
 
     // Jika data ditemukan, maka hapus foto dan record nya
     if($delete)
@@ -324,10 +363,11 @@ class Slider extends CI_Controller
 
   public function _rules()
   {
-    $this->form_validation->set_rules('no_urut', 'No. urut', 'trim|required');
+    $this->form_validation->set_rules('no_urut', 'No. urut', 'required|numeric');
 
     // set pesan form validasi error
     $this->form_validation->set_message('required', '{field} wajib diisi');
+    $this->form_validation->set_message('numeric', '{field} harus berupa angka');
 
     $this->form_validation->set_rules('id_slider', 'id_slider', 'trim');
     $this->form_validation->set_error_delimiters('<div class="alert alert-danger alert">', '</div>');

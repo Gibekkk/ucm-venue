@@ -2,6 +2,27 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
+ * Lang (fungsi bawaan CodeIgniter yang hilang karena file ini menimpa
+ * system/helpers/language_helper.php). Dipakai Ion Auth di view admin/auth.
+ *
+ * @param   string  $line       Baris bahasa
+ * @param   string  $for        Nilai "for" (id elemen form)
+ * @param   array   $attributes Atribut HTML tambahan
+ * @return  string
+ */
+if (!function_exists('lang')) {
+    function lang($line, $for = '', $attributes = array()) {
+        $line = get_instance()->lang->line($line);
+
+        if ($for !== '') {
+            $line = '<label for="' . $for . '"' . _stringify_attributes($attributes) . '>' . $line . '</label>';
+        }
+
+        return $line;
+    }
+}
+
+/**
  * Detect user's preferred language from browser headers
  * Returns language code: 'english', 'indonesian', 'chinese_simplified', 'chinese_traditional'
  */
