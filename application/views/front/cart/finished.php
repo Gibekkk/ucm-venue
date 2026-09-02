@@ -14,6 +14,12 @@
 
     <div class="col-lg-12"><h1>TRANSAKSI SELESAI</h1><hr>
 			<h4>INVOICE NO. <?php echo $cart_finished_row->id_invoice ?> (<font color='red'>BELUM LUNAS</font>)</h4>
+			<?php if (!empty($cart_finished_row->nama_acara)) { ?>
+				<p><b>Nama Acara:</b> <?php echo $cart_finished_row->nama_acara ?></p>
+			<?php } ?>
+			<?php if (!empty($npwp)) { ?>
+				<p><b>NPWP:</b> <?php echo !empty($npwp->nomor_npwp) ? htmlspecialchars($npwp->nomor_npwp) : '-' ?></p>
+			<?php } ?>
 			<?php echo form_open('cart/download_invoice/'.$cart_finished_row->id_trans, array("target"=>"_blank")) ?>
 				<button type="submit" name="download_invoice" class="btn btn-sm btn-success">Download Invoice</button>
 			<?php echo form_close() ?>
@@ -63,17 +69,13 @@
 								<td align="right"><?php echo number_format($cart_finished_row->subtotal) ?></td>
 					    </tr>
 							<tr>
-					      <th scope="row">Diskon (Member)</th>
-					      <td align="right">Rp</td>
-								<td align="right"><?php echo number_format($cart_finished_row->diskon) ?></td>
-					    </tr>
-							<tr>
 					      <th scope="row">Grand Total</th>
 					      <td align="right">Rp</td>
 								<td align="right"><b><?php echo number_format($cart_finished_row->grand_total) ?></b></td>
 					    </tr>
 						</tbody>
 					</table>
+					<p class="text-muted"><small><i class="fa fa-info-circle"></i> Harga sudah termasuk PPN.</small></p>
 				</div>
 			</div>
 
@@ -119,38 +121,19 @@
 					<ul>
 						<li>Segera lakukan pembayaran sebelum: <b><?php $time = strtotime($cart_finished_row->deadline); echo date("d F Y | H:i:s",$time); ?> WIB</b>, apabila melewati batas waktu tersebut maka booking dianggap batal.</li>
 			      <li>Jumlah yang harus Anda bayarkan adalah sebesar: Rp <b><?php echo number_format($cart_finished_row->grand_total) ?></b></li>
-			      <li>Silahkan melakukan konfirmasi pembayaran ke halaman berikut ini, <a href="<?php echo base_url('contact') ?>">klik disini</a> atau langsung menghubungi kami ke customer service yang telah disediakan dan melampirkan foto bukti bayarnya.</li>
+			      <li>Silahkan melakukan konfirmasi pembayaran ke halaman berikut ini, <a href="<?php echo base_url('confirm') ?>">klik disini</a> atau langsung menghubungi kami ke customer service yang telah disediakan dan melampirkan foto bukti bayarnya.</li>
 			      <li>Kami akan segera memproses pemesanan Anda setelah mendapatkan konfirmasi pembayaran segera mungkin.</li>
 					</ul>
 					<p align="center">~ Terima Kasih ~</p>
 				</div>
 			</div>
-			
-			<?php if (!$this->ion_auth->logged_in()) { ?>
-			<!-- Create Account Section for Guests -->
+
+			<!-- Tracking Booking untuk Guest (tidak ada sistem login/akun) -->
 			<div class="row">
 				<div class="col-lg-12">
 					<hr>
-					<div class="alert alert-info">
-						<h4><i class="fa fa-user"></i> Buat Akun untuk Kemudahan Tracking Booking</h4>
-						<p>Dengan membuat akun, Anda dapat:</p>
-						<ul>
-							<li>Melihat riwayat semua booking Anda</li>
-							<li>Tracking status pembayaran dan booking dengan mudah</li>
-							<li>Checkout lebih cepat di booking berikutnya</li>
-							<li>Mendapatkan notifikasi status booking via email</li>
-						</ul>
-						<a href="<?php echo base_url('auth/register') ?>" class="btn btn-primary">
-							<i class="fa fa-user-plus"></i> Daftar Sekarang
-						</a>
-						<a href="<?php echo base_url('auth/login') ?>" class="btn btn-success">
-							<i class="fa fa-sign-in"></i> Login
-						</a>
-						<hr>
-						<p><small>Sudah punya akun dengan email yang sama? Login untuk melihat semua booking Anda!</small></p>
-					</div>
 					<div class="alert alert-warning">
-						<h4><i class="fa fa-search"></i> Tracking Booking untuk Guest</h4>
+						<h4><i class="fa fa-search"></i> Tracking Booking</h4>
 						<p>Anda dapat melakukan tracking status booking dengan memasukkan Email dan Kode Booking Anda.</p>
 						<a href="<?php echo base_url('cart/track_booking') ?>" class="btn btn-warning">
 							<i class="fa fa-search"></i> Track Booking Saya
@@ -158,8 +141,7 @@
 					</div>
 				</div>
 			</div>
-			<?php } ?>
-			
+
 	  </div>
   </div>
 </div>

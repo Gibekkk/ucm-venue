@@ -28,10 +28,16 @@
       ?>
 
       <?php if (in_array($usertype, array('1', '5', '6', '7', '8'))): ?>
-        <li <?php if($this->uri->segment(2)=="transaksi" && $this->uri->segment(3)!="update_diskon"){echo "class='active'";} ?>>
-          <a href="<?php echo base_url('admin/transaksi') ?>">
-            <i class="fa fa-book"></i> <span>Transaksi</span>
-          </a>
+        <li class="treeview <?php if($this->uri->segment(2)=="transaksi" && $this->uri->segment(3)!="update_diskon"){echo "active";} ?>">
+          <a href="#"><i class="fa fa-book"></i> <span>Transaksi</span><i class="fa fa-angle-left pull-right"></i></a>
+          <ul class="treeview-menu">
+            <li <?php if($this->uri->segment(2)=="transaksi" && $this->uri->segment(3)!="refund_history"){echo "class='active'";} ?>>
+              <a href="<?php echo base_url('admin/transaksi') ?>"><i class="fa fa-circle-o"></i> Data Transaksi</a>
+            </li>
+            <li <?php if($this->uri->segment(2)=="transaksi" && $this->uri->segment(3)=="refund_history"){echo "class='active'";} ?>>
+              <a href="<?php echo base_url('admin/transaksi/refund_history') ?>"><i class="fa fa-circle-o"></i> Riwayat Refund</a>
+            </li>
+          </ul>
         </li>
       <?php endif; ?>
       
@@ -93,7 +99,7 @@
       <li class="header"><font style="font-size: 16px;color: white; font-weight: bold">PENGATURAN</font></li>
       
       <?php if (in_array($usertype, array('1', '6', '8'))): ?>
-        <li <?php if($this->uri->segment(3) == "update_diskon"){echo "class='active'";} ?>><a href='<?php echo base_url() ?>admin/transaksi/update_diskon/1'> <i class="fa fa-scissors"></i> <span>Diskon Member</span> </a> </li>
+        <!-- Menu "Diskon Member" sudah dihilangkan (fitur diskon member tidak dipakai lagi) -->
         <li <?php if($this->uri->segment(2) == "company"){echo "class='active'";} ?>><a href='<?php echo base_url() ?>admin/company/update/1'> <i class="fa fa-building"></i> <span>Profil</span> </a> </li>
         <li <?php if($this->uri->segment(2) == "auth" && $this->uri->segment(3) == ""){echo "class='active'";} ?>>
           <a href='#'><i class='fa fa-users'></i><span> User Management </span><i class='fa fa-angle-left pull-right'></i></a>

@@ -23,6 +23,15 @@ class Lapangan_model extends CI_Model
     return $this->db->get($this->table)->result();
   }
 
+  // Khusus venue (bukan addon), dipakai di dropdown admin (mis. halaman Reschedule)
+  function get_all_non_addon()
+  {
+    $this->db->where('is_active', '1');
+    $this->db->where('is_addon', '0');
+    $this->db->order_by('nama_lapangan', 'ASC');
+    return $this->db->get($this->table)->result();
+  }
+
   // Fungsi baru untuk Tahap 2: Khusus mengambil data addon untuk halaman Cart
   function get_all_addons()
   {

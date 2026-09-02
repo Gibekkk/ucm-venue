@@ -52,7 +52,6 @@
 						<ul>
 							<li>Masukkan email dan kode booking yang telah dikirim ke email Anda</li>
 							<li>Anda dapat melihat status pembayaran dan detail booking</li>
-							<li>Sudah punya akun? <a href="<?php echo base_url('auth/login') ?>">Login disini</a> untuk tracking lebih mudah</li>
 						</ul>
 					</div>
 				</div>
@@ -91,30 +90,141 @@
 						<tr>
 							<th>Status</th>
 							<td>
-								<?php 
+								<?php
 								if ($booking->status == '0') {
 									echo '<span class="label label-warning">Belum Checkout</span>';
 								} elseif ($booking->status == '1') {
-									echo '<span class="label label-info">Menunggu Pembayaran</span>';
+									if (in_array('pelunasan', $submitted_jenis)) {
+										echo '<span class="label label-info">Menunggu Konfirmasi Pelunasan</span>';
+									} elseif (in_array('deposit', $submitted_jenis)) {
+										echo '<span class="label label-info">Menunggu Konfirmasi Deposit</span>';
+									} else {
+										echo '<span class="label label-info">Belum Lunas</span>';
+									}
 								} elseif ($booking->status == '2') {
-									echo '<span class="label label-success">Lunas</span>';
+									if (in_array('pelunasan', $submitted_jenis)) {
+										echo '<span class="label label-primary">Lunas Deposit</span> <span class="label label-info">Menunggu Konfirmasi Pelunasan</span>';
+									} else {
+										echo '<span class="label label-primary">Lunas Deposit</span>';
+									}
 								} elseif ($booking->status == '3') {
-									echo '<span class="label label-danger">Dibatalkan</span>';
+									echo '<span class="label label-default">Expired</span>';
+								} elseif ($booking->status == '4') {
+									echo '<span class="label label-success">Lunas Pembayaran</span>';
+								} elseif ($booking->status == '5') {
+									echo '<span class="label label-danger">Refund</span>';
+								} elseif ($booking->status == '6') {
+									echo '<span class="label label-default">Dibatalkan</span>';
 								}
 								?>
 							</td>
 						</tr>
 						<?php if ($booking->deadline) { ?>
 						<tr>
-							<th>Batas Pembayaran</th>
+							<th>Batas Pembayaran Deposit</th>
 							<td class="text-danger"><b><?php echo date('d F Y, H:i', strtotime($booking->deadline)); ?> WIB</b></td>
 						</tr>
 						<?php } ?>
 						<tr>
-							<th>Grand Total</th>
-							<td><h4 class="text-success"><b>Rp <?php echo number_format($booking->grand_total); ?></b></h4></td>
+							<th>Total Keseluruhan yang Harus Dibayar <small class="text-muted">(Sewa + Deposit)</small></th>
+							<td><h4 class="text-success"><b>Rp <?php echo number_format($payment_info['total_keseluruhan_tagihan']); ?></b></h4></td>
 						</tr>
+						<tr>
+							<th>Total Sudah Dibayar <small class="text-muted">(Sewa + Deposit)</small></th>
+							<td><b>Rp <?php echo number_format($payment_info['total_keseluruhan_dibayar']); ?></b></td>
+						</tr>
+						<tr>
+							<th>Sisa yang Masih Harus Dibayar</th>
+							<td><b class="text-danger">Rp <?php echo number_format($payment_info['sisa_keseluruhan']); ?></b></td>
+						</tr>
+						<tr>
+							<td colspan="2"><small class="text-muted"><i class="fa fa-info-circle"></i> Harga sudah termasuk PPN.</small></td>
+						</tr>
+						<?php if (!empty($npwp)) { ?>
+						<tr>
+							<th>NPWP</th>
+							<td>
+								<?php echo !empty($npwp->nomor_npwp) ? htmlspecialchars($npwp->nomor_npwp) : '-'; ?>
+								<?php if (!empty($npwp->npwp_image)) { ?>
+									&nbsp;(<a href="<?php echo base_url($npwp->npwp_image); ?>" target="_blank">Lihat berkas</a>)
+								<?php } ?>
+							</td>
+						</tr>
+						<?php } ?>
+						<?php if ($booking->status == '6') { ?>
+						<tr>
+							<th>Alasan Dibatalkan</th>
+							<td class="text-danger"><?php echo nl2br(htmlspecialchars($booking->cancel_note ?? '-')); ?></td>
+						</tr>
+						<?php } ?>
+						<?php if ($booking->status == '5') { ?>
+						<tr>
+							<th>Nominal Refund</th>
+							<td>Rp <?php echo number_format($booking->refund_amount ?? 0); ?></td>
+						</tr>
+						<?php } ?>
 					</table>
+
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel panel-success">
+								<div class="panel-heading"><b><i class="fa fa-home"></i> Sewa (Pelunasan)</b></div>
+								<table class="table table-bordered" style="margin-bottom:0;">
+									<tr>
+										<th style="width:55%">Total Tagihan</th>
+										<td>Rp <?php echo number_format($payment_info['grand_total']); ?></td>
+									</tr>
+									<tr>
+										<th>Sudah Dibayar</th>
+										<td>Rp <?php echo number_format($payment_info['total_dibayar_pelunasan']); ?></td>
+									</tr>
+									<tr>
+										<th>Sisa Tagihan</th>
+										<td><b class="text-success">Rp <?php echo number_format($payment_info['sisa_tagihan']); ?></b></td>
+									</tr>
+									<tr>
+										<th>Status</th>
+										<td>
+											<?php if ($payment_info['status_pelunasan'] == 'Lunas') { ?>
+												<span class="label label-success">Lunas</span>
+											<?php } else { ?>
+												<span class="label label-warning">Belum Lunas</span>
+											<?php } ?>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading"><b><i class="fa fa-shield"></i> Deposit (Jaminan)</b></div>
+								<table class="table table-bordered" style="margin-bottom:0;">
+									<tr>
+										<th style="width:55%">Total Tagihan <small class="text-muted">(25%)</small></th>
+										<td>Rp <?php echo number_format($payment_info['target_deposit']); ?></td>
+									</tr>
+									<tr>
+										<th>Sudah Dibayar</th>
+										<td>Rp <?php echo number_format($payment_info['total_dibayar_deposit']); ?></td>
+									</tr>
+									<tr>
+										<th>Sisa Tagihan</th>
+										<td><b class="text-primary">Rp <?php echo number_format($payment_info['sisa_deposit']); ?></b></td>
+									</tr>
+									<tr>
+										<th>Status</th>
+										<td>
+											<?php if ($payment_info['status_deposit'] == 'Lunas') { ?>
+												<span class="label label-success">Lunas</span>
+											<?php } else { ?>
+												<span class="label label-warning">Belum Lunas</span>
+											<?php } ?>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
 					
 					<h3>Detail Lapangan</h3>
 					<div class="table-responsive">
@@ -148,13 +258,78 @@
 						</table>
 					</div>
 					
+					<?php if (!empty($konfirmasi_list)) { ?>
+					<h3>Riwayat Pembayaran</h3>
+					<div class="table-responsive">
+						<table class="table table-striped table-bordered">
+							<thead>
+								<tr>
+									<th>Jenis</th>
+									<th>Nominal</th>
+									<th>Bank Pengirim</th>
+									<th>Waktu Submit</th>
+									<th>Status Verifikasi</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php foreach ($konfirmasi_list as $k) { ?>
+								<tr>
+									<td>
+										<?php if ($k->jenis_konfirmasi == 'deposit') { ?>
+											<span class="label label-primary">Deposit</span>
+										<?php } else { ?>
+											<span class="label label-success">Pelunasan</span>
+										<?php } ?>
+									</td>
+									<td>Rp <?php echo number_format($k->nominal); ?></td>
+									<td><?php echo htmlspecialchars($k->bank_pengirim); ?></td>
+									<td><?php echo date('d F Y, H:i', strtotime($k->created_at)); ?> WIB</td>
+									<td>
+										<?php
+										// Deposit dianggap terverifikasi kalau status sudah lewat dari Belum Lunas (2/4).
+										// Pelunasan dianggap terverifikasi kalau status sudah Lunas Pembayaran (4).
+										if ($k->jenis_konfirmasi == 'deposit') {
+											if (in_array($booking->status, array('2', '4'))) {
+												echo '<span class="label label-success">Terverifikasi</span>';
+											} elseif ($booking->status == '1') {
+												echo '<span class="label label-warning">Menunggu Verifikasi</span>';
+											} else {
+												echo '<span class="label label-default">-</span>';
+											}
+										} else {
+											if ($booking->status == '4') {
+												echo '<span class="label label-success">Terverifikasi</span>';
+											} elseif (in_array($booking->status, array('1', '2'))) {
+												echo '<span class="label label-warning">Menunggu Verifikasi</span>';
+											} else {
+												echo '<span class="label label-default">-</span>';
+											}
+										}
+										?>
+									</td>
+								</tr>
+								<?php } ?>
+							</tbody>
+						</table>
+					</div>
+					<?php } ?>
+
+					<?php
+						// Tombol disembunyikan kalau booking sudah tidak aktif (Expired/Lunas
+						// Pembayaran/Refund/Dibatalkan) ATAU kedua kewajiban (Sewa & Deposit)
+						// sudah lunas semua.
+						$show_confirm_button = !in_array($booking->status, array('3', '5', '6'))
+							&& ($payment_info['status_pelunasan'] != 'Lunas' || $payment_info['status_deposit'] != 'Lunas');
+					?>
+					<?php if ($show_confirm_button) { ?>
 					<div class="alert alert-info">
 						<h4><i class="fa fa-info-circle"></i> Perhatian</h4>
-						<p>Untuk konfirmasi pembayaran, silakan hubungi customer service kami dengan menyertakan kode booking dan bukti transfer.</p>
-						<a href="<?php echo base_url('contact') ?>" class="btn btn-primary">
-							<i class="fa fa-phone"></i> Hubungi Kami
+						<p>Untuk konfirmasi pembayaran/deposit, silakan isi form konfirmasi dengan menyertakan kode booking dan bukti transfer.</p>
+						<a href="<?php echo base_url('confirm?id_invoice=' . urlencode($booking->id_invoice)) ?>" class="btn btn-primary">
+							<i class="fa fa-credit-card"></i> Konfirmasi Pembayaran
 						</a>
 					</div>
+					<?php } ?>
 					
 					<a href="<?php echo base_url('cart/track_booking') ?>" class="btn btn-default">
 						<i class="fa fa-search"></i> Cari Booking Lain

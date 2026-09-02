@@ -54,7 +54,8 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 $route['about']       = 'page/about';
-$route['contact']     = 'page/contact';
+$route['contact']     = 'page/contact'; // alias lama, tetap didukung
+$route['confirm']     = 'page/contact'; // halaman konfirmasi pembayaran/deposit (baru)
 $route['send']        = 'page/send';
 
 $route['event']           = 'event/archive';

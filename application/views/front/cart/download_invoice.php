@@ -17,9 +17,23 @@
       <?php if($cart_finished_row->status == '1'){ ?>
         <p style='color:red'>(BELUM LUNAS)</p>
       <?php }elseif($cart_finished_row->status == '2'){ ?>
-        <p style='color:green'>(LUNAS)</p>
+        <p style='color:orange'>(LUNAS DEPOSIT)</p>
+      <?php }elseif($cart_finished_row->status == '3'){ ?>
+        <p style='color:gray'>(EXPIRED)</p>
+      <?php }elseif($cart_finished_row->status == '4'){ ?>
+        <p style='color:green'>(LUNAS PEMBAYARAN)</p>
+      <?php }elseif($cart_finished_row->status == '5'){ ?>
+        <p style='color:gray'>(REFUND)</p>
+      <?php }elseif($cart_finished_row->status == '6'){ ?>
+        <p style='color:gray'>(DIBATALKAN)</p>
       <?php } ?>
     </b>
+    <?php if (!empty($cart_finished_row->nama_acara)) { ?>
+      <br>Nama Acara: <?php echo $cart_finished_row->nama_acara ?>
+    <?php } ?>
+    <?php if (!empty($npwp)) { ?>
+      <br>NPWP: <?php echo !empty($npwp->nomor_npwp) ? htmlspecialchars($npwp->nomor_npwp) : '-' ?>
+    <?php } ?>
   </div>
 
   <table>
@@ -58,17 +72,13 @@
           <td align="right"><?php echo number_format($cart_finished_row->subtotal) ?></td>
         </tr>
         <tr>
-          <th scope="row">Diskon (Member)</th>
-          <td align="right">Rp</td>
-          <td align="right"><?php echo number_format($cart_finished_row->diskon) ?></td>
-        </tr>
-        <tr>
           <th scope="row">Grand Total</th>
           <td align="right">Rp</td>
           <td align="right"><b><?php echo number_format($cart_finished_row->grand_total) ?></b></td>
         </tr>
       </tbody>
     </table>
+    <p style="font-size:11px; color:#777;"><i>* Harga sudah termasuk PPN.</i></p>
     <b>CATATAN:</b>
     <?php if($cart_finished_row->catatan > 0){?>
       <?php echo $cart_finished_row->catatan ?>
@@ -101,7 +111,7 @@
 		<ul>
       <li>Segera lakukan pembayaran sebelum: <b><?php $time = strtotime($cart_finished_row->deadline); echo date("d F Y | H:i:s",$time); ?> WIB</b>, apabila melewati batas waktu tersebut maka booking dianggap batal.</li>
       <li>Jumlah yang harus Anda bayarkan adalah sebesar: Rp <b><?php echo number_format($cart_finished_row->grand_total) ?></b></li>
-      <li>Silahkan melakukan konfirmasi pembayaran ke halaman berikut ini, <a href="<?php echo base_url('contact') ?>">klik disini</a> atau langsung menghubungi kami ke customer service yang telah disediakan dan melampirkan foto bukti bayarnya.</li>
+      <li>Silahkan melakukan konfirmasi pembayaran ke halaman berikut ini, <a href="<?php echo base_url('confirm') ?>">klik disini</a> atau langsung menghubungi kami ke customer service yang telah disediakan dan melampirkan foto bukti bayarnya.</li>
       <li>Kami akan segera memproses pemesanan Anda setelah mendapatkan konfirmasi pembayaran segera mungkin.</li>
 		</ul>
 		<p align="center"><b>~ Terima Kasih ~</b></p>

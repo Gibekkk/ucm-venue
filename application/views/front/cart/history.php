@@ -38,9 +38,17 @@
 										<td style="text-align:center"><?php echo number_format($history->grand_total) ?></a></td>
 										<td style="text-align:center">
 			                <?php if($history->status == '1'){ ?>
-			                  <button type="button" name="status" class="btn btn-danger">BELUM LUNAS</button>
+			                  <span class="label label-warning">BELUM LUNAS</span>
 			                <?php } elseif($history->status == '2'){ ?>
-			                  <button type="button" name="status" class="btn btn-success">LUNAS</button>
+			                  <span class="label label-primary">LUNAS DEPOSIT</span>
+			                <?php } elseif($history->status == '3'){ ?>
+			                  <span class="label label-default">EXPIRED</span>
+			                <?php } elseif($history->status == '4'){ ?>
+			                  <span class="label label-success">LUNAS PEMBAYARAN</span>
+			                <?php } elseif($history->status == '5'){ ?>
+			                  <span class="label label-danger">REFUND</span>
+			                <?php } elseif($history->status == '6'){ ?>
+			                  <span class="label label-default">DIBATALKAN</span>
 			                <?php } ?>
 										</td>
 										<td style="text-align:center">

@@ -17,9 +17,27 @@
 					<?php if($history_detail_row->status == '1'){ ?>
 		        <font color='red'>(BELUM LUNAS)</font>
 		      <?php }elseif($history_detail_row->status == '2'){ ?>
-		        <font color='green'>(LUNAS)</font>
+		        <font color='orange'>(LUNAS DEPOSIT)</font>
+		      <?php }elseif($history_detail_row->status == '3'){ ?>
+		        <font color='gray'>(EXPIRED)</font>
+		      <?php }elseif($history_detail_row->status == '4'){ ?>
+		        <font color='green'>(LUNAS PEMBAYARAN)</font>
+		      <?php }elseif($history_detail_row->status == '5'){ ?>
+		        <font color='gray'>(REFUND)</font>
+		      <?php }elseif($history_detail_row->status == '6'){ ?>
+		        <font color='gray'>(DIBATALKAN)</font>
 		      <?php } ?>
 				</h4>
+				<?php if (!empty($history_detail_row->nama_acara)) { ?>
+					<p><b>Nama Acara:</b> <?php echo $history_detail_row->nama_acara ?></p>
+				<?php } ?>
+				<?php if (!empty($npwp)) { ?>
+					<p><b>NPWP:</b> <?php echo !empty($npwp->nomor_npwp) ? htmlspecialchars($npwp->nomor_npwp) : '-' ?>
+					<?php if (!empty($npwp->npwp_image)) { ?>
+						(<a href="<?php echo base_url($npwp->npwp_image) ?>" target="_blank">Lihat berkas</a>)
+					<?php } ?>
+					</p>
+				<?php } ?>
 				<?php echo form_open('cart/download_invoice/'.$history_detail_row->id_trans) ?>
 					<button type="submit" name="download_invoice" class="btn btn-sm btn-success">Download Invoice</button>
 				<?php echo form_close() ?>
@@ -69,11 +87,6 @@
 							<td align="right"><?php echo number_format($history_detail_row->subtotal) ?></td>
 						</tr>
 						<tr>
-							<th scope="row">Diskon (Member)</th>
-							<td align="right">Rp</td>
-							<td align="right"><?php echo number_format($history_detail_row->diskon) ?></td>
-						</tr>
-						<tr>
 							<th scope="row">Grand Total</th>
 							<td align="right">Rp</td>
 							<td align="right"><b><?php echo number_format($history_detail_row->grand_total) ?></b></td>
@@ -115,7 +128,7 @@
 					<ul>
 						<li>Segera lakukan pembayaran sebelum: <b><?php $time = strtotime($history_detail_row->deadline); echo date("d F Y | H:i:s",$time); ?> WIB</b>, apabila melewati batas waktu tersebut maka booking dianggap batal.</li>
 			      <li>Jumlah yang harus Anda bayarkan adalah sebesar: Rp <b><?php echo number_format($history_detail_row->grand_total) ?></b></li>
-			      <li>Silahkan melakukan konfirmasi pembayaran ke halaman berikut ini, <a href="<?php echo base_url('contact') ?>">klik disini</a> atau langsung menghubungi kami ke customer service yang telah disediakan dan melampirkan foto bukti bayarnya.</li>
+			      <li>Silahkan melakukan konfirmasi pembayaran ke halaman berikut ini, <a href="<?php echo base_url('confirm') ?>">klik disini</a> atau langsung menghubungi kami ke customer service yang telah disediakan dan melampirkan foto bukti bayarnya.</li>
 			      <li>Kami akan segera memproses pemesanan Anda setelah mendapatkan konfirmasi pembayaran segera mungkin.</li>
 					</ul>
 					<p align="center">~ Terima Kasih ~</p>

@@ -15,12 +15,16 @@
         <div class="col-lg-12">
             <h1><?php echo strtoupper($this->lang->line('cart_title')); ?></h1>
             <hr>
-            <form action="<?php echo base_url('cart/checkout') ?>" method="post">
+            <?php if (!empty($min_booking_date)) { ?>
+                <div class="alert alert-info"><i class="fa fa-info-circle"></i> Booking minimal H-4 (tanggal acara paling cepat <b><?php echo date('d-m-Y', strtotime($min_booking_date)); ?></b>).</div>
+            <?php } ?>
+            <?php echo form_open_multipart('cart/checkout') ?>
                 <div class="row">
                     <div class="col-lg-12">
                         <?php if ($this->session->flashdata('message')) {
                             echo $this->session->flashdata('message');
                         } ?>
+                        <h4><i class="fa fa-building"></i> Booking Venue</h4>
                         <div class="box-body table-responsive padding">
                             <table id="datatable" class="table table-striped table-bordered">
                                 <thead>
@@ -36,8 +40,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php $no = 1;
-                                    foreach ($cart_data as $cart) { ?>
+                                    <?php
+                                    // PENTING: jangan pakai nama $ada_venue di sini, itu variabel yang dikirim
+                                    // dari controller (Cart::index()) untuk mengontrol tombol "Tambah Addon" di
+                                    // bawah. Kalau ditimpa di sini, nilainya bisa salah kalau loop ini berubah nanti.
+                                    $ada_baris_venue = false;
+                                    foreach ($cart_data as $cart) {
+                                        if ($cart->is_addon == 1) continue;
+                                        $ada_baris_venue = true; ?>
                                         <tr>
                                             <td style="text-align:left"><?php echo $cart->nama_lapangan ?></td>
                                             <td style="text-align:center" class="harga_per_jam"><?php echo number_format($cart->harga) ?></td>
@@ -46,6 +56,7 @@
                                                 <input type="hidden" name="harga_jual[]" value="<?php echo $cart->harga ?>">
                                                 <input type="hidden" name="lapangan[]" value="<?php echo $cart->lapangan_id ?>">
                                                 <input type="hidden" name="id_transdet[]" value="<?php echo $cart->id_transdet ?>">
+                                                <input type="hidden" name="is_addon[]" value="0">
                                                 <input type="hidden" value="<?php echo $cart->lapangan_id; ?>" class="lapangan_id">
                                             </td>
                                             <td style="text-align:center">
@@ -62,6 +73,8 @@
                                                 <a href="<?php echo base_url('cart/delete/') . $cart->id_transdet ?>" class="btn btn-sm btn-danger"><i class="fa fa-remove"></i></a>
                                             </td>
                                         </tr>
+                                    <?php } if (!$ada_baris_venue) { ?>
+                                        <tr><td colspan="8" class="text-center text-muted">Belum ada venue di keranjang.</td></tr>
                                     <?php } ?>
                                 </tbody>
                             </table>
@@ -69,15 +82,67 @@
                     </div>
                 </div>
 
-                <?php if (!empty($addons)) { ?>
-                    <div class="row" style="margin-bottom: 15px;">
-                        <div class="col-lg-12 text-left">
-                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addonModal">
-                                <i class="fa fa-plus-circle"></i> Tambah Addon (Opsional)
-                            </button>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h4><i class="fa fa-cubes"></i> Addon</h4>
+
+                        <?php if (!empty($addons) && $ada_venue) { ?>
+                            <div style="margin-bottom: 10px;">
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addonModal">
+                                    <i class="fa fa-plus-circle"></i> Tambah Addon (Opsional)
+                                </button>
+                            </div>
+                        <?php } elseif (!empty($addons) && !$ada_venue) { ?>
+                            <div class="alert alert-warning" style="padding:8px 12px; margin-bottom:10px;">
+                                <i class="fa fa-info-circle"></i> Tambahkan Venue terlebih dahulu sebelum bisa menambahkan Addon.
+                            </div>
+                        <?php } ?>
+
+                        <div class="box-body table-responsive padding">
+                            <table class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: center">Addon</th>
+                                        <th style="text-align: center">Harga Satuan</th>
+                                        <th style="text-align: center">Tanggal</th>
+                                        <th style="text-align: center">Jumlah</th>
+                                        <th style="text-align: center">Total</th>
+                                        <th style="text-align: center"><?php echo $this->lang->line('cart_action'); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $ada_addon = false;
+                                    foreach ($cart_data as $cart) {
+                                        if ($cart->is_addon != 1) continue;
+                                        $ada_addon = true; ?>
+                                        <tr>
+                                            <td style="text-align:left"><?php echo $cart->nama_lapangan ?></td>
+                                            <td style="text-align:center" class="harga_per_jam"><?php echo number_format($cart->harga) ?></td>
+                                            <td style="text-align:center">
+                                                <input type="text" name="tanggal[]" class="form-control tanggal_addon" autocomplete="off" required>
+                                                <input type="hidden" name="harga_jual[]" value="<?php echo $cart->harga ?>">
+                                                <input type="hidden" name="lapangan[]" value="<?php echo $cart->lapangan_id ?>">
+                                                <input type="hidden" name="id_transdet[]" value="<?php echo $cart->id_transdet ?>">
+                                                <input type="hidden" name="is_addon[]" value="1">
+                                                <!-- Addon tidak pakai jam, jam_mulai dikunci 00:00:00 -->
+                                                <input type="hidden" name="jam_mulai[]" value="00:00:00">
+                                            </td>
+                                            <td style="text-align:center">
+                                                <input type="number" name="durasi[]" class="jumlah" min="1" value="1">
+                                            </td>
+                                            <td style="text-align:center" class="subtotal"></td>
+                                            <td style="text-align:center">
+                                                <a href="<?php echo base_url('cart/delete/') . $cart->id_transdet ?>" class="btn btn-sm btn-danger"><i class="fa fa-remove"></i></a>
+                                            </td>
+                                        </tr>
+                                    <?php } if (!$ada_addon) { ?>
+                                        <tr><td colspan="6" class="text-center text-muted">Belum ada addon di keranjang.</td></tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                <?php } ?>
+                </div>
 
                 <table class="table table-striped table-bordered">
                     <tbody>
@@ -85,11 +150,6 @@
                             <th><?php echo $this->lang->line('cart_subtotal'); ?></th>
                             <td align="center">Rp</td>
                             <td align="right" id="subtotal_bawah"></td>
-                        </tr>
-                        <tr>
-                            <th><?php echo $this->lang->line('cart_discount'); ?></th>
-                            <td align="center">Rp</td>
-                            <td align="right" id="diskon"></td>
                         </tr>
                         <tr>
                             <th scope="row"><?php echo $this->lang->line('cart_grand_total'); ?></th>
@@ -100,16 +160,21 @@
                         </tr>
                     </tbody>
                 </table>
+                <p class="text-muted"><small><i class="fa fa-info-circle"></i> Harga sudah termasuk PPN.</small></p>
 
                 <?php if ($cek_keranjang != NULL) { ?>
                     <div class="col-lg-12">
+                        <div class="row">
+                            <div class="form-group"><label><?php echo $this->lang->line('cart_event_name'); ?></label>
+                                <input type="text" name="nama_acara" id="nama_acara" class="form-control" required placeholder="<?php echo $this->lang->line('cart_event_name'); ?>">
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="form-group"><label><?php echo $this->lang->line('cart_notes'); ?></label>
                                 <input type="text" name="catatan" class="form-control">
                             </div>
                         </div>
-                        
-                        <?php if ($is_guest) { ?>
+
                         <div class="row">
                             <div class="col-lg-12">
                                 <h3><?php echo $this->lang->line('guest_info_title'); ?></h3>
@@ -152,34 +217,53 @@
                                 </div>
                             </div>
                         </div>
-                        <?php } ?>
-                        
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h3><?php echo $this->lang->line('npwp_title'); ?></h3>
+                                <hr>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label><?php echo $this->lang->line('npwp_number'); ?> <span class="text-danger">*</span></label>
+                                    <input type="text" name="nomor_npwp" id="nomor_npwp" class="form-control" required placeholder="00.000.000.0-000.000">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label><?php echo $this->lang->line('npwp_upload'); ?> <span class="text-danger">*</span></label>
+                                    <input type="file" name="npwp_file" id="npwp_file" class="form-control" accept="image/png, image/jpeg, image/jpg, application/pdf" required>
+                                    <small class="text-muted"><?php echo $this->lang->line('npwp_hint'); ?></small>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 <?php } ?>
 
-                <?php if (!empty($customer_data->id_trans) || (!empty($cek_keranjang->id_trans))) { ?>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <?php if (!empty($cek_keranjang->lapangan_id)) { ?>
-                                <a href="<?php echo base_url('cart/empty_cart/') . ($cek_keranjang->id_trans ?? $customer_data->id_trans ?? '') ?>">
-                                    <button name="hapus" type="button" class="btn btn-danger" aria-label="Left Align" title="Kosongkan Keranjang" OnClick="return confirm('Apakah Anda yakin?');">
-                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Kosongkan
-                                    </button>
-                                </a>
-                            <?php } ?>
-                            <a href="<?php echo base_url() ?>">
-                                <button name="hapus" type="button" class="btn btn-primary" aria-label="Left Align" title="Lanjut Belanja">
-                                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Lanjut Belanja
+                <div class="row">
+                    <div class="col-lg-12">
+                        <?php if (!empty($cek_keranjang->id_trans) && !empty($cek_keranjang->lapangan_id)) { ?>
+                            <a href="<?php echo base_url('cart/empty_cart/') . $cek_keranjang->id_trans ?>">
+                                <button name="hapus" type="button" class="btn btn-danger" aria-label="Left Align" title="Kosongkan Keranjang" OnClick="return confirm('Apakah Anda yakin?');">
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Kosongkan
                                 </button>
                             </a>
-                            <?php if ($cek_keranjang != NULL) { ?>
-                                <button name="checkout" type="button" id="btnCheckout" class="btn btn-success" aria-label="Left Align" title="Checkout">
-                                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Checkout
-                                </button>
-                            <?php } ?>
-                        </div>
+                        <?php } ?>
+                        <a href="<?php echo base_url() ?>">
+                            <button name="hapus" type="button" class="btn btn-primary" aria-label="Left Align" title="Lanjut Belanja">
+                                <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Lanjut Belanja
+                            </button>
+                        </a>
+                        <?php if (!empty($cek_keranjang->id_trans)) { ?>
+                            <button name="checkout" type="button" id="btnCheckout" class="btn btn-success" aria-label="Left Align" title="Checkout">
+                                <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Checkout
+                            </button>
+                        <?php } ?>
                     </div>
-                    <input type="hidden" name="id_trans" value="<?php echo $cek_keranjang->id_trans ?? $customer_data->id_trans ?? '' ?>">
+                </div>
+                <?php if (!empty($cek_keranjang->id_trans)) { ?>
+                    <input type="hidden" name="id_trans" value="<?php echo $cek_keranjang->id_trans ?>">
                 <?php } ?>
                 <?php echo form_close() ?>
         </div>
@@ -198,10 +282,10 @@
                                 <input type="text" id="searchAddonInput" class="form-control" placeholder="Cari addon (misal: Bola, Sepatu, Wasit)...">
                             </div>
                         </div>
-                        
+
                         <div style="max-height: 350px; overflow-y: auto;">
                             <ul class="list-group" id="addonList">
-                                <?php if (!empty($addons)) { 
+                                <?php if (!empty($addons)) {
                                     foreach ($addons as $addon) { ?>
                                     <li class="list-group-item addon-item" style="display: flex; justify-content: space-between; align-items: center;">
                                         <div>
@@ -239,7 +323,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="modal fade" id="confirmCheckoutModal" tabindex="-1" role="dialog" aria-labelledby="confirmCheckoutModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -261,8 +345,10 @@
 
         <link href="<?php echo base_url('assets/plugins/') ?>datepicker/css/bootstrap-datepicker.css" rel="stylesheet">
         <script src="<?php echo base_url('assets/plugins/') ?>datepicker/js/bootstrap-datepicker.js"></script>
-        
+
         <script type="text/javascript">
+            var MIN_BOOKING_DATE = "<?php echo !empty($min_booking_date) ? $min_booking_date : '0'; ?>";
+
             // Script Live Search Addon
             $(document).ready(function() {
                 $("#searchAddonInput").on("keyup", function() {
@@ -271,6 +357,8 @@
                         $(this).toggle($(this).find(".addon-name").text().toLowerCase().indexOf(value) > -1)
                     });
                 });
+
+                // NPWP sekarang wajib diisi untuk semua booking (tidak lagi opsional/pakai checkbox instansi).
             });
 
             // Format Uang
@@ -280,11 +368,62 @@
                 return parts.join(".");
             }
 
-            // Datepicker & Kalkulasi Cart
+            function hitungGrandTotal() {
+                subtotal_bawah = 0;
+                $('.subtotal').each(function(i, obj) {
+                    a_subtotal_html = $(this).html().trim().replace(/,/g, '');
+                    if (a_subtotal_html == "") {
+                        a_subtotal_html = "0";
+                    }
+                    subtotal_bawah += parseInt(a_subtotal_html);
+                });
+
+                $("#subtotal_bawah").html(numberWithCommas(subtotal_bawah));
+                $("#grandtotal").html(numberWithCommas(subtotal_bawah));
+            }
+
+            // Datepicker (venue) & Kalkulasi Cart. Booking minimal H-4: tanggal sebelum
+            // MIN_BOOKING_DATE tidak bisa dipilih (sisanya disabled).
             $(function() {
                 $(document).on("focus", ".tanggal", function() {
+                    var $el = $(this);
+
+                    // Ambil daftar tanggal yang venue ini sudah penuh booking aktif, lalu
+                    // disable tanggal2 tsb di datepicker. Cuma di-fetch sekali per elemen.
+                    if ($el.data('dp_initialized')) {
+                        return;
+                    }
+                    $el.data('dp_initialized', true);
+
+                    var lapangan_id_el = $el.parent().parent().find(".lapangan_id");
+
+                    $.post('<?php echo base_url(); ?>Cart/getBookedDates', {
+                        lapangan_id: lapangan_id_el.val()
+                    }, function(disabledDates) {
+                        $el.datepicker({
+                            startDate: MIN_BOOKING_DATE,
+                            autoclose: true,
+                            todayHighlight: true,
+                            format: 'yyyy-mm-dd',
+                            datesDisabled: disabledDates || []
+                        });
+                        $el.datepicker('show');
+                    }, 'json').fail(function() {
+                        // kalau AJAX gagal, tetap bisa pilih tanggal (aturan H-4 tetap berlaku)
+                        $el.datepicker({
+                            startDate: MIN_BOOKING_DATE,
+                            autoclose: true,
+                            todayHighlight: true,
+                            format: 'yyyy-mm-dd'
+                        });
+                        $el.datepicker('show');
+                    });
+                });
+
+                // Datepicker addon: sama-sama minimal H-4, tapi tidak memicu lookup jam
+                $(document).on("focus", ".tanggal_addon", function() {
                     $(this).datepicker({
-                        startDate: '0',
+                        startDate: MIN_BOOKING_DATE,
                         autoclose: true,
                         todayHighlight: true,
                         format: 'yyyy-mm-dd'
@@ -363,31 +502,30 @@
 
                         subtotal_el.html(numberWithCommas(harga_per_jam_int * parseInt(durasi)));
 
-                        subtotal_bawah = 0;
-                        $('.subtotal').each(function(i, obj) {
-                            a_subtotal_html = $(this).html().trim().replace(/,/g, '');
-                            if (a_subtotal_html == "") {
-                                a_subtotal_html = "0";
-                            }
-
-                            a_subtotal_html_int = parseInt(a_subtotal_html);
-                            subtotal_bawah += a_subtotal_html_int;
-                        });
-
-                        <?php if ($this->session->userdata('usertype') == '3') {
-                            echo "var disc = '" . $diskon['harga'] . "';"; ?>
-                        <?php } else {
-                            echo "var disc = '0';";
-                        } ?>
-
-                        var diskon = $('#diskon').val();
-
-                        $("#subtotal_bawah").html(numberWithCommas(subtotal_bawah));
-                        $("#diskon").html(numberWithCommas(disc));
-                        var gtotal = (subtotal_bawah - disc);
-                        $("#grandtotal").html(numberWithCommas(gtotal));
+                        hitungGrandTotal();
                     }
                 });
+
+                // Kalkulasi addon: total = harga satuan x jumlah (tidak butuh jam)
+                $(document).on("change keyup", ".jumlah", function() {
+                    jumlah_el = $(this);
+                    jumlah = parseInt($(this).val());
+                    if (isNaN(jumlah) || jumlah < 1) {
+                        jumlah = 1;
+                        jumlah_el.val(jumlah);
+                    }
+
+                    harga_per_jam_el = jumlah_el.parent().parent().find(".harga_per_jam");
+                    subtotal_el = jumlah_el.parent().parent().find(".subtotal");
+
+                    harga_satuan = parseInt(harga_per_jam_el.html().replace(/,/g, ''));
+                    subtotal_el.html(numberWithCommas(harga_satuan * jumlah));
+
+                    hitungGrandTotal();
+                });
+
+                // Hitung ulang total addon yang sudah ada saat halaman dimuat
+                $('.jumlah').trigger('keyup');
             });
         </script>
 
@@ -405,19 +543,19 @@
             });
             return false;
         }
-        
+
         // Show validation error modal
         function showValidationError(message) {
             $('#validationMessage').text(message);
             $('#validationModal').modal('show');
         }
-        
+
         // Checkout validation and confirmation
         $(document).ready(function() {
             $('#btnCheckout').click(function(e) {
                 e.preventDefault();
-                
-                // Check if all booking details are filled
+
+                // Check if all VENUE booking details are filled (addon tidak butuh jam)
                 var allFilled = true;
                 $('.tanggal').each(function() {
                     if($(this).val() == '') {
@@ -434,14 +572,29 @@
                         allFilled = false;
                     }
                 });
-                
+                $('.tanggal_addon').each(function() {
+                    if($(this).val() == '') {
+                        allFilled = false;
+                    }
+                });
+                $('.jumlah').each(function() {
+                    if($(this).val() == '' || $(this).val() == '0') {
+                        allFilled = false;
+                    }
+                });
+
                 if(!allFilled) {
                     showValidationError('<?php echo $this->lang->line("validation_complete_booking"); ?>');
                     return false;
                 }
-                
-                <?php if ($is_guest) { ?>
-                // Validate guest information
+
+                if(!$('#nama_acara').length || $('#nama_acara').val() == '') {
+                    showValidationError('<?php echo $this->lang->line("cart_event_name"); ?> <?php echo $this->lang->line("validation_required"); ?>');
+                    $('#nama_acara').focus();
+                    return false;
+                }
+
+                // Validate guest information (booking selalu sebagai tamu, tanpa login)
                 if($('#guest_name').val() == '') {
                     showValidationError('<?php echo $this->lang->line("guest_full_name"); ?> <?php echo $this->lang->line("validation_required"); ?>');
                     $('#guest_name').focus();
@@ -472,12 +625,21 @@
                     $('#guest_address').focus();
                     return false;
                 }
-                <?php } ?>
-                
+                if($('#nomor_npwp').val() == '') {
+                    showValidationError('<?php echo $this->lang->line("npwp_number"); ?> <?php echo $this->lang->line("validation_required"); ?>');
+                    $('#nomor_npwp').focus();
+                    return false;
+                }
+                if($('#npwp_file').val() == '') {
+                    showValidationError('<?php echo $this->lang->line("npwp_hint"); ?>');
+                    $('#npwp_file').focus();
+                    return false;
+                }
+
                 // Show confirmation modal
                 $('#confirmCheckoutModal').modal('show');
             });
-            
+
             // Handle confirm checkout button
             $('#confirmCheckoutBtn').click(function() {
                 $('#confirmCheckoutModal').modal('hide');
