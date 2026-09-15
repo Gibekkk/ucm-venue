@@ -43,11 +43,18 @@
       
       <?php if (in_array($usertype, array('1', '6', '7', '8'))): ?>
         
-        <li <?php if($this->uri->segment(2) == "lapangan"){echo "class='active'";} ?>>
+        <li <?php if($this->uri->segment(2) == "lapangan" && $this->uri->segment(3) != "addon" && $this->uri->segment(3) != "create_addon"){echo "class='active'";} ?>>
           <a href='#'><i class='fa fa-list'></i><span> Lapangan </span><i class='fa fa-angle-left pull-right'></i></a>
           <ul class='treeview-menu'>
             <li <?php if($this->uri->segment(2) == "lapangan" && $this->uri->segment(3) == "create"){echo "class='active'";} ?>><a href='<?php echo base_url('admin/lapangan/create') ?>'><i class='fa fa-circle-o'></i> Tambah Lapangan </a></li>
             <li <?php if($this->uri->segment(2) == "lapangan" && $this->uri->segment(3) == ""){echo "class='active'";} ?>><a href='<?php echo base_url('admin/lapangan') ?>'><i class='fa fa-circle-o'></i> Data Lapangan </a></li>
+          </ul>
+        </li>
+        <li <?php if($this->uri->segment(2) == "lapangan" && ($this->uri->segment(3) == "addon" || $this->uri->segment(3) == "create_addon")){echo "class='active'";} ?>>
+          <a href='#'><i class='fa fa-plus-square'></i><span> Addon </span><i class='fa fa-angle-left pull-right'></i></a>
+          <ul class='treeview-menu'>
+            <li <?php if($this->uri->segment(2) == "lapangan" && $this->uri->segment(3) == "create_addon"){echo "class='active'";} ?>><a href='<?php echo base_url('admin/lapangan/create_addon') ?>'><i class='fa fa-circle-o'></i> Tambah Addon </a></li>
+            <li <?php if($this->uri->segment(2) == "lapangan" && $this->uri->segment(3) == "addon"){echo "class='active'";} ?>><a href='<?php echo base_url('admin/lapangan/addon') ?>'><i class='fa fa-circle-o'></i> Data Addon </a></li>
           </ul>
         </li>
         <li <?php if($this->uri->segment(2) == "album"){echo "class='active'";} ?>>

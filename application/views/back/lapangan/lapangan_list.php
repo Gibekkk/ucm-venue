@@ -10,7 +10,7 @@
         <ol class="breadcrumb">
           <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
           <li><a href="#"><?php echo $module ?></a></li>
-					<li class="active"><?php echo $title ?></li>
+          <li class="active"><?php echo $title ?></li>
         </ol>
       </section>
       <!-- Main content -->
@@ -18,33 +18,31 @@
         <!-- Small boxes (Stat box) -->
         <div class="row">
           <div class="col-lg-12">
-						<div class="box box-primary">
+            <div class="box box-primary">
               <div class="box-body">
-								<a href="<?php echo base_url('admin/').strtolower($module).'/create' ?>" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Data</a>
-								<hr>
-								<?php echo $this->session->userdata('message') <> '' ? $this->session->userdata('message') : ''; ?>
+                <a href="<?php echo isset($create_url) ? $create_url : base_url('admin/lapangan/create') ?>" class="btn btn-primary"><i class="fa fa-plus"></i> <?php echo isset($tambah_label) ? $tambah_label : 'Tambah Data' ?></a>
+                <hr>
+                <?php echo $this->session->userdata('message') <> '' ? $this->session->userdata('message') : ''; ?>
                 <div class="table-responsive no-padding">
-									<table id="datatable" class="table table-striped">
-										<thead>
-											<tr>
-												<th style="text-align: center">No.</th>
-												<th style="text-align: center">Nama Lapangan</th>
+                  <table id="datatable" class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th style="text-align: center">No.</th>
+                        <th style="text-align: center">Nama <?php echo (!empty($is_addon_page) ? 'Addon' : 'Lapangan') ?></th>
                         <th style="text-align: center">Harga per Jam</th>
-                        <th style="text-align: center">Kategori</th>
                         <th style="text-align: center">Uploader</th>
                         <th style="text-align: center">Upload</th>
                         <th style="text-align: center">Updater</th>
                         <th style="text-align: center">Update</th>
-												<th style="text-align: center">Aksi</th>
-											</tr>
-										</thead>
-										<tbody>
+                        <th style="text-align: center">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       <?php $no=1; foreach($get_all as $data){ ?>
                         <tr>
                           <td style="text-align: center"><?php echo $no++ ?></td>
                           <td style="text-align: center"><?php echo $data->nama_lapangan ?></td>
                           <td style="text-align: center"><?php echo number_format($data->harga) ?></td>
-                          <td style="text-align: center"><?php echo $data->is_addon ? 'Addon' : 'Utama' ?></td>
                           <td style="text-align: center"><?php echo $data->created_by ?></td>
                           <td style="text-align: center"><?php echo $data->created_at ?></td>
                           <td style="text-align: center"><?php echo $data->modified_by ?></td>
@@ -58,10 +56,10 @@
                         </tr>
                       <?php } ?>
                     </tbody>
-									</table>
+                  </table>
                 </div>
-							</div>
-						</div>
+              </div>
+            </div>
           </div><!-- ./col -->
         </div><!-- /.row -->
       </section><!-- /.content -->

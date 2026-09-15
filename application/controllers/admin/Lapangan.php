@@ -24,18 +24,58 @@ class Lapangan extends CI_Controller
 
   public function index()
   {
-    $this->data['title']    = 'Data ' . $this->data['module'];
-    $this->data['get_all']  = $this->Lapangan_model->get_all();
+    $this->data['title']    = 'Data Lapangan';
+    // Halaman ini KHUSUS lapangan/venue utama - addon dipisah ke halaman
+    // admin/lapangan/addon (lihat method addon() di bawah).
+    $this->data['get_all']  = $this->Lapangan_model->get_all_non_addon();
+    $this->data['is_addon_page'] = false;
+    $this->data['create_url']    = site_url('admin/lapangan/create');
+    $this->data['tambah_label']  = 'Tambah Lapangan';
+
+    $this->load->view('back/lapangan/lapangan_list', $this->data);
+  }
+
+  // Halaman KHUSUS Addon (fasilitas tambahan), terpisah dari Data Lapangan di atas.
+  // Pakai view list yang sama, cuma sumber data & label tombolnya beda.
+  public function addon()
+  {
+    $this->data['module']   = 'Addon';
+    $this->data['title']    = 'Data Addon';
+    $this->data['get_all']  = $this->Lapangan_model->get_all_addons();
+    $this->data['is_addon_page'] = true;
+    $this->data['create_url']    = site_url('admin/lapangan/create_addon');
+    $this->data['tambah_label']  = 'Tambah Addon';
 
     $this->load->view('back/lapangan/lapangan_list', $this->data);
   }
 
   public function create()
   {
-    $this->data['title']          = 'Tambah ' . $this->data['module'] . ' Baru';
+    $this->_show_create_form('venue');
+  }
+
+  // Form tambah Addon - form yang sama dengan create(), cuma otomatis menandai
+  // data baru sebagai Addon (is_addon = 1) tanpa perlu checkbox lagi.
+  public function create_addon()
+  {
+    $this->_show_create_form('addon');
+  }
+
+  private function _show_create_form($jenis)
+  {
+    $is_addon_page = ($jenis === 'addon');
+
+    $this->data['module']         = $is_addon_page ? 'Addon' : 'Lapangan';
+    $this->data['title']          = $is_addon_page ? 'Tambah Addon Baru' : 'Tambah Lapangan Baru';
     $this->data['action']         = site_url('admin/lapangan/create_action');
     $this->data['button_submit']  = 'Simpan';
     $this->data['button_reset']   = 'Reset';
+    // Jenis dikunci lewat hidden field (bukan checkbox lagi) - Data Lapangan
+    // dan Data Addon sekarang dua halaman terpisah, jadi jenisnya sudah pasti
+    // sesuai halaman mana yang dibuka, tidak perlu dipilih manual.
+    $this->data['is_addon_page']  = $is_addon_page;
+    $this->data['jenis']          = $jenis;
+    $this->data['label_jenis']    = $is_addon_page ? 'Addon' : 'Lapangan';
 
     $this->data['nama_lapangan'] = array(
       'name'  => 'nama_lapangan',
@@ -53,13 +93,6 @@ class Lapangan extends CI_Controller
       'value' => $this->form_validation->set_value('harga'),
       'required'    => '',
     );
-    $this->data['is_addon'] = array(
-      'name'  => 'is_addon',
-      'id'    => 'is_addon',
-      'type'  => 'checkbox',
-      'class' => 'form-control',
-      'value' => $this->form_validation->set_value('is_addon'),
-    );
 
     $this->load->view('back/lapangan/lapangan_add', $this->data);
   }
@@ -68,9 +101,16 @@ class Lapangan extends CI_Controller
   {
     $this->_rules();
 
+    // Jenis (venue/addon) dikirim lewat hidden field dari form create(), bukan
+    // checkbox lagi - jadi kalau validasi gagal, kita tahu form mana yang harus
+    // ditampilkan ulang.
+    $jenis = ($this->input->post('jenis') === 'addon') ? 'addon' : 'venue';
+
     if ($this->form_validation->run() == FALSE) {
-      $this->create();
+      $this->_show_create_form($jenis);
     } else {
+      $is_addon = ($jenis === 'addon') ? 1 : 0;
+
       /* 4 adalah menyatakan tidak ada file yang diupload*/
       if ($_FILES['foto']['error'] <> 4) {
         $nmfile = strtolower(url_title($this->input->post('nama_lapangan'))) . date('YmdHis');
@@ -88,7 +128,7 @@ class Lapangan extends CI_Controller
           $error = array('error' => $this->upload->display_errors());
           $this->session->set_flashdata('message', '<div class="alert alert-danger alert">' . $error['error'] . '</div>');
 
-          $this->create();
+          $this->_show_create_form($jenis);
         }
         //file berhasil diupload -> lanjutkan ke query INSERT
         else {
@@ -113,7 +153,7 @@ class Lapangan extends CI_Controller
             'harga'           => $this->input->post('harga'),
             'foto'            => $nmfile . $foto['file_ext'],
             'created_by'      => $this->session->userdata('username'),
-            'is_addon'        => $this->input->post('is_addon') ? 1 : 0
+            'is_addon'        => $is_addon
           );
 
           // eksekusi query INSERT
@@ -123,7 +163,7 @@ class Lapangan extends CI_Controller
             <div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
               <i class="ace-icon fa fa-bullhorn green"></i> Data berhasil disimpan
             </div>');
-          redirect(site_url('admin/lapangan'));
+          redirect(site_url($is_addon ? 'admin/lapangan/addon' : 'admin/lapangan'));
         }
       } else // Jika file upload kosong
       {
@@ -131,7 +171,7 @@ class Lapangan extends CI_Controller
           'nama_lapangan'   => $this->input->post('nama_lapangan'),
           'harga'           => $this->input->post('harga'),
           'created_by'      => $this->session->userdata('username'),
-          'is_addon'        => $this->input->post('is_addon') ? 1 : 0
+          'is_addon'        => $is_addon
         );
 
         // eksekusi query INSERT
@@ -141,7 +181,7 @@ class Lapangan extends CI_Controller
         <div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
           <i class="ace-icon fa fa-bullhorn green"></i> Data berhasil disimpan
         </div>');
-        redirect(site_url('admin/lapangan'));
+        redirect(site_url($is_addon ? 'admin/lapangan/addon' : 'admin/lapangan'));
       }
     }
   }
@@ -149,13 +189,22 @@ class Lapangan extends CI_Controller
   public function update($id)
   {
     $row = $this->Lapangan_model->get_by_id($id);
-    $this->data['lapangan'] = $this->Lapangan_model->get_by_id($id);
+    $this->data['lapangan'] = $row;
 
     if ($row) {
-      $this->data['title']          = 'Ubah Data ' . $this->data['module'];
+      // Jenis (Lapangan/Addon) ditentukan dari data yang sudah ada, TIDAK bisa
+      // diubah lewat form edit - kalau mau pindah jenis, hapus lalu buat baru
+      // di halaman yang sesuai. Ini supaya Data Lapangan & Data Addon konsisten
+      // tetap terpisah, tidak ada yang "pindah kategori" diam-diam saat diedit.
+      $is_addon_page = ((int) $row->is_addon === 1);
+
+      $this->data['module']         = $is_addon_page ? 'Addon' : 'Lapangan';
+      $this->data['title']          = 'Ubah Data ' . ($is_addon_page ? 'Addon' : 'Lapangan');
       $this->data['action']         = site_url('admin/lapangan/update_action');
       $this->data['button_submit']  = 'Simpan';
       $this->data['button_reset']   = 'Reset';
+      $this->data['is_addon_page']  = $is_addon_page;
+      $this->data['label_jenis']    = $is_addon_page ? 'Addon' : 'Lapangan';
 
       $this->data['id_lapangan'] = array(
         'name'  => 'id_lapangan',
@@ -176,12 +225,6 @@ class Lapangan extends CI_Controller
         'class' => 'form-control',
         'required'    => '',
       );
-      $this->data['is_addon'] = array(
-        'name'  => 'is_addon',
-        'id'    => 'is_addon',
-        'type'  => 'checkbox',
-        'class' => 'form-control',
-      );
       $this->load->view('back/lapangan/lapangan_edit', $this->data);
     } else {
       $this->session->set_flashdata('message', '<div class="alert alert-warning alert">Data tidak ditemukan</div>');
@@ -193,8 +236,16 @@ class Lapangan extends CI_Controller
   {
     $this->_rules();
 
+    $id = $this->input->post('id_lapangan');
+    // Ambil data lama untuk tahu jenisnya (venue/addon) - dipakai untuk redirect
+    // balik ke daftar yang benar setelah simpan, dan is_addon TIDAK ikut diubah
+    // sama sekali di sini supaya jenis tidak pernah berpindah lewat form edit.
+    $existing = $this->Lapangan_model->get_by_id($id);
+    $is_addon = $existing ? (int) $existing->is_addon : 0;
+    $redirect_to = $is_addon ? 'admin/lapangan/addon' : 'admin/lapangan';
+
     if ($this->form_validation->run() == FALSE) {
-      $this->update($this->input->post('id_lapangan'));
+      $this->update($id);
     } else {
       $nmfile = strtolower(url_title($this->input->post('nama_lapangan'))) . date('YmdHis');
 
@@ -216,11 +267,11 @@ class Lapangan extends CI_Controller
           $error = array('error' => $this->upload->display_errors());
           $this->session->set_flashdata('message', '<div class="alert alert-danger alert">' . $error['error'] . '</div>');
 
-          $this->update($this->input->post('id_lapangan'));
+          $this->update($id);
         }
         // Jika file berhasil diupload -> lanjutkan ke query INSERT
         else {
-          $delete = $this->Lapangan_model->del_by_id($this->input->post('id_lapangan'));
+          $delete = $this->Lapangan_model->del_by_id($id);
 
           $dir        = "assets/images/lapangan/" . $delete->foto;
 
@@ -251,15 +302,14 @@ class Lapangan extends CI_Controller
             'harga'           => $this->input->post('harga'),
             'foto'            => $nmfile . $foto['file_ext'],
             'modified_by'     => $this->session->userdata('username'),
-            'is_addon'        => $this->input->post('is_addon') ? 1 : 0
           );
 
-          $this->Lapangan_model->update($this->input->post('id_lapangan'), $data);
+          $this->Lapangan_model->update($id, $data);
           $this->session->set_flashdata('message', '
               <div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
                 <i class="ace-icon fa fa-bullhorn green"></i> Data berhasil disimpan
               </div>');
-          redirect(site_url('admin/lapangan'));
+          redirect(site_url($redirect_to));
         }
       }
       // Jika file upload kosong
@@ -268,21 +318,25 @@ class Lapangan extends CI_Controller
           'nama_lapangan'   => $this->input->post('nama_lapangan'),
           'harga'           => $this->input->post('harga'),
           'modified_by'     => $this->session->userdata('username'),
-          'is_addon'        => $this->input->post('is_addon') ? 1 : 0
         );
 
-        $this->Lapangan_model->update($this->input->post('id_lapangan'), $data);
+        $this->Lapangan_model->update($id, $data);
         $this->session->set_flashdata('message', '
             <div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
               <i class="ace-icon fa fa-bullhorn green"></i> Data berhasil disimpan
             </div>');
-        redirect(site_url('admin/lapangan'));
+        redirect(site_url($redirect_to));
       }
     }
   }
 
   public function delete($id)
   {
+    // Ambil dulu jenisnya SEBELUM dihapus, supaya setelah delete bisa diarahkan
+    // balik ke daftar yang benar (Data Lapangan atau Data Addon).
+    $existing    = $this->Lapangan_model->get_by_id($id);
+    $redirect_to = ($existing && (int) $existing->is_addon === 1) ? 'admin/lapangan/addon' : 'admin/lapangan';
+
     $delete = $this->Lapangan_model->del_by_id($id);
 
     // menyimpan lokasi gambar dalam variable
@@ -299,7 +353,7 @@ class Lapangan extends CI_Controller
       <div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
         <i class="ace-icon fa fa-bullhorn green"></i> Data berhasil dihapus
       </div>');
-      redirect(site_url('admin/lapangan'));
+      redirect(site_url($redirect_to));
     }
     // Jika data tidak ada
     else {
@@ -307,7 +361,7 @@ class Lapangan extends CI_Controller
         <div class="alert alert-block alert-success"><button type="button" class="close" data-dismiss="alert"><i class="ace-icon fa fa-times"></i></button>
 					<i class="ace-icon fa fa-bullhorn green"></i> Data tidak ditemukan
         </div>');
-      redirect(site_url('admin/lapangan'));
+      redirect(site_url($redirect_to));
     }
   }
 

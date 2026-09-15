@@ -19,24 +19,18 @@
             <?php echo form_open_multipart($action);?>
               <div class="box box-primary">
                 <div class="box-body">
-                  <div class="form-group"><label>Nama Lapangan</label>
+                  <!-- Jenis (Lapangan/Addon) sudah ditentukan dari halaman mana form ini
+                       dibuka - dikirim lewat hidden field, tidak perlu dipilih manual lagi. -->
+                  <input type="hidden" name="jenis" value="<?php echo isset($jenis) ? $jenis : 'venue' ?>">
+
+                  <div class="form-group"><label>Nama <?php echo isset($label_jenis) ? $label_jenis : 'Lapangan' ?></label>
                     <?php echo form_input($nama_lapangan);?>
                   </div>
-                  
+
                   <div class="form-group"><label>Harga Per Jam</label>
                     <?php echo form_input($harga);?>
                   </div>
 
-                  <div class="form-group">
-                    <label>Status Addon</label>
-                    <div class="checkbox">
-                      <label>
-                        <input type="hidden" name="is_addon" value="0">
-                        <input type="checkbox" name="is_addon" value="1">
-                        Jadikan fasilitas ini sebagai Addon
-                      </label>
-                    </div>
-                  </div>
                   <div class="form-group"><label>Foto</label>
                     <input type="file" class="form-control" name="foto" id="foto" onchange="tampilkanPreview(this,'preview')"/>
                     <br><p><b>Preview Foto</b><br>

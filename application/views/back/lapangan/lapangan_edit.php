@@ -19,28 +19,26 @@
             <?php echo form_open_multipart($action);?>
               <div class="box box-primary">
                 <div class="box-body">
-                  <div class="form-group"><label>Nama Lapangan</label>
+                  <div class="form-group">
+                    <label>Jenis</label>
+                    <p class="form-control-static">
+                      <span class="label <?php echo (!empty($is_addon_page) ? 'label-info' : 'label-primary') ?>"><?php echo isset($label_jenis) ? $label_jenis : 'Lapangan' ?></span>
+                      <small class="text-muted">(jenis tidak bisa diubah dari sini - hapus lalu buat baru di halaman yang sesuai kalau perlu pindah jenis)</small>
+                    </p>
+                  </div>
+
+                  <div class="form-group"><label>Nama <?php echo isset($label_jenis) ? $label_jenis : 'Lapangan' ?></label>
                     <?php echo form_input($nama_lapangan, $lapangan->nama_lapangan);?>
                   </div>
-                  
+
                   <div class="form-group"><label>Harga Per Jam</label>
                     <?php echo form_input($harga, $lapangan->harga);?>
                   </div>
 
-                  <div class="form-group">
-                    <label>Status Addon</label>
-                    <div class="checkbox">
-                      <label>
-                        <input type="hidden" name="is_addon" value="0">
-                        <input type="checkbox" name="is_addon" value="1" <?php echo (isset($lapangan->is_addon) && $lapangan->is_addon == 1) ? 'checked' : ''; ?>>
-                        Jadikan fasilitas ini sebagai Addon
-                      </label>
-                    </div>
-                  </div>
                   <div class="form-group"><label>Foto Sebelumnya</label><br>
                     <img src="<?php echo base_url('assets/images/lapangan/'.$lapangan->foto.'') ?>" width="300px" class="img-responsive"/>
                   </div>
-                  
+
                   <div class="form-group"><label>Foto Baru</label>
                     <input type="file" class="form-control" name="foto" id="foto" onchange="tampilkanPreview(this,'preview')"/>
                     <br><p><b>Preview Foto</b><br>

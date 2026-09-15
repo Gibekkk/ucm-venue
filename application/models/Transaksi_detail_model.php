@@ -39,7 +39,7 @@ class Transaksi_detail_model extends CI_Model{
 	{
 		$this->db->select('transaksi_detail.tanggal, transaksi_detail.jam_mulai, transaksi_detail.durasi, transaksi_detail.jam_selesai,
 		                    transaksi.status, transaksi.grand_total,
-		                    (SELECT COALESCE(SUM(kp.nominal),0) FROM konfirmasi_pembayaran kp WHERE kp.id_invoice = transaksi.id_invoice AND kp.jenis_konfirmasi = 'deposit') AS total_dibayar_deposit');
+		                    (SELECT COALESCE(SUM(kp.nominal),0) FROM konfirmasi_pembayaran kp WHERE kp.id_invoice = transaksi.id_invoice AND kp.jenis_konfirmasi = \'deposit\') AS total_dibayar_deposit', FALSE);
 		$this->db->join('transaksi', 'transaksi.id_trans = transaksi_detail.trans_id');
 		$this->db->where('transaksi_detail.lapangan_id', $lapangan_id);
 		$this->db->where('transaksi_detail.tanggal >=', date('Y-m-d'));
@@ -61,7 +61,7 @@ class Transaksi_detail_model extends CI_Model{
 	function get_jam_mulai_terpakai($tanggal, $lapangan_id, $exclude_trans_id = null){
 		$this->db->select('transaksi_detail.jam_mulai, transaksi_detail.durasi, transaksi_detail.jam_selesai,
 		                    transaksi.status, transaksi.grand_total,
-		                    (SELECT COALESCE(SUM(kp.nominal),0) FROM konfirmasi_pembayaran kp WHERE kp.id_invoice = transaksi.id_invoice AND kp.jenis_konfirmasi = 'deposit') AS total_dibayar_deposit');
+		                    (SELECT COALESCE(SUM(kp.nominal),0) FROM konfirmasi_pembayaran kp WHERE kp.id_invoice = transaksi.id_invoice AND kp.jenis_konfirmasi = \'deposit\') AS total_dibayar_deposit', FALSE);
 		$this->db->join('transaksi', 'transaksi.id_trans = transaksi_detail.trans_id');
 		$this->db->where('transaksi_detail.tanggal', $tanggal);
 		$this->db->where('transaksi_detail.lapangan_id', $lapangan_id);
@@ -96,7 +96,7 @@ class Transaksi_detail_model extends CI_Model{
 
 		$this->db->select('transaksi_detail.id_transdet, transaksi_detail.jam_mulai, transaksi_detail.durasi, transaksi_detail.jam_selesai,
 		                    transaksi.status, transaksi.grand_total,
-		                    (SELECT COALESCE(SUM(kp.nominal),0) FROM konfirmasi_pembayaran kp WHERE kp.id_invoice = transaksi.id_invoice AND kp.jenis_konfirmasi = 'deposit') AS total_dibayar_deposit');
+		                    (SELECT COALESCE(SUM(kp.nominal),0) FROM konfirmasi_pembayaran kp WHERE kp.id_invoice = transaksi.id_invoice AND kp.jenis_konfirmasi = \'deposit\') AS total_dibayar_deposit', FALSE);
 		$this->db->join('transaksi', 'transaksi.id_trans = transaksi_detail.trans_id');
 		$this->db->where('transaksi_detail.tanggal', $tanggal);
 		$this->db->where('transaksi_detail.lapangan_id', $lapangan_id);
@@ -135,4 +135,3 @@ class Transaksi_detail_model extends CI_Model{
 		return $this->db->get('transaksi_detail')->result();
 	}
 }
-
